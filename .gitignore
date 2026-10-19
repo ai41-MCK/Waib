@@ -1,0 +1,18 @@
+# Created by the tool
+.venv/
+__pycache__/
+*.pyc
+/waib-*/
+
+# Local development (never shipped)
+/examples/
+/tests/
+/CLAUDE.md
+.pytest_cache/
+.claude/
+
+# OS / editor noise
+.DS_Store
+*.swp
+.idea/
+.vscode/

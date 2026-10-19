@@ -1,0 +1,17 @@
+{
+  "name": "waib",
+  "owner": {
+    "name": "ai41-MCK"
+  },
+  "description": "Marketplace for Waib, the website redesign skill.",
+  "plugins": [
+    {
+      "name": "waib",
+      "source": "./",
+      "description": "Waib: redesign an outdated website in a local app. Pick the pages, get a report on each, iterate designs side by side with annotations, and export the finished pages.",
+      "author": {
+        "name": "ai41-MCK"
+      }
+    }
+  ]
+}
