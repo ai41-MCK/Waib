@@ -5,6 +5,7 @@ full crawl. Kept in <project>/pages.json and shown as a tree of URL folders.
 """
 
 import re
+import socket
 import threading
 import time
 import xml.etree.ElementTree as ET
@@ -24,6 +25,7 @@ from common import UA, base_host, canonical, decode_text, is_same_domain, leads_
 MAX_URLS = 200_000        # sitemap entries kept
 MAX_SITEMAPS = 500        # sitemap files read (indexes can list thousands)
 MAX_BYTES = 50_000_000    # per download
+HEADERS_WITHIN = 30       # seconds
 AROUND = 20               # pages whose links are read when there is no sitemap
 SECTION = 20              # the most pages "the whole section" offers
 AROUND_PICKS = 4          # "This page and 4 around it"
@@ -42,32 +44,83 @@ class WebOnly(HTTPRedirectHandler):
             raise HTTPError(newurl, code, f"redirect to a non-web address: {newurl}", headers, fp)
         if leads_inward(newurl, req.full_url):   # a public page may not lead into this computer or network
             raise HTTPError(newurl, code, f"redirect to a local or private address: {newurl}", headers, fp)
+        fp.close()                     # urllib would read the redirect's body, however long it is
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def _checked(connection):
-    """A connection that refuses to end on this computer or network: a name can point elsewhere when
-    urllib connects than when private() looked it up (DNS rebinding)."""
-    class Checked(connection):
+def _connection(base, check):
+    """base with the answer's headers within HEADERS_WITHIN seconds (the timeout is per read). check: it refuses
+    to end on this computer or network (a name can point elsewhere when urllib connects than when private() looked)."""
+    class Connection(base):
         def connect(self):
             super().connect()
-            if local_ip(self.sock.getpeername()[0]):
+            if check and local_ip(self.sock.getpeername()[0]):
                 self.sock.close()
                 raise OSError(f"{self.host} leads to this computer or its network")
-    return Checked
+
+        def getresponse(self):
+            late = []
+
+            def cut():
+                late.append(True)
+                try:
+                    self.sock.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
+            timer = threading.Timer(HEADERS_WITHIN, cut)
+            timer.start()
+            try:
+                response = super().getresponse()
+            finally:
+                timer.cancel()
+            if late:                   # (cut off, the headers can look complete)
+                raise OSError(f"{self.host} didn't answer within {HEADERS_WITHIN} s")
+            return response
+    return Connection
 
 
 class Public(HTTPSHandler, HTTPHandler):
     """Connections to a public site's addresses are checked (through a proxy, the proxy connects instead)."""
+    plain, secure = _connection(HTTPConnection, True), _connection(HTTPSConnection, True)
+
     def http_open(self, req):
-        return self.do_open(HTTPConnection if req.has_proxy() else CHECKED_HTTP, req)
+        return self.do_open(HTTPConnection if req.has_proxy() else self.plain, req)
 
     def https_open(self, req):
-        return self.do_open(HTTPSConnection if req._tunnel_host else CHECKED_HTTPS, req, context=self._context)
+        return self.do_open(HTTPSConnection if req._tunnel_host else self.secure, req, context=self._context)
 
 
-CHECKED_HTTP, CHECKED_HTTPS = _checked(HTTPConnection), _checked(HTTPSConnection)
-OPEN, OPEN_LOCAL = build_opener(WebOnly, Public).open, build_opener(WebOnly).open   # OPEN_LOCAL: a site on this computer or network
+class Local(Public):
+    plain, secure = _connection(HTTPConnection, False), _connection(HTTPSConnection, False)
+
+
+def _opener(*handlers):
+    """urllib's open() for web addresses only (its own would read file: and ftp: too)."""
+    opener = build_opener(WebOnly, *handlers)
+
+    def open_(req, **kwargs):
+        if not web(req.full_url):
+            raise ValueError(f"not a web address: {req.full_url}")
+        return opener.open(req, **kwargs)
+    return open_
+
+
+OPEN, OPEN_LOCAL = _opener(Public), _opener(Local)   # OPEN_LOCAL: a site on this computer or network
+
+
+def read_all(r, limit, seconds):
+    """At most about `limit` bytes of an answer, within `seconds` in all (the timeout is per read: a server
+    can send a byte every few seconds forever)."""
+    end, parts, size = time.monotonic() + seconds, [], 0
+    while size <= limit:
+        part = r.read1(65536)
+        if not part:
+            break
+        parts.append(part)
+        size += len(part)
+        if time.monotonic() > end:
+            raise ValueError(f"{r.geturl()} didn't arrive within {seconds} s")
+    return b"".join(parts)
 
 
 def inflate(body, coding, url):
@@ -87,10 +140,8 @@ def inflate(body, coding, url):
 
 def fetch(url, timeout=15, local=False):
     """(final url, body bytes, content type) of a GET; raises OSError/ValueError. local: the site is on this computer or network."""
-    if not web(url):                   # never file: and the like
-        raise ValueError(f"not a web address: {url}")
     with (OPEN_LOCAL if local else OPEN)(Request(url, headers={"User-Agent": UA, "Accept-Encoding": "identity"}), timeout=timeout) as r:
-        body = r.read(MAX_BYTES + 1)
+        body = read_all(r, MAX_BYTES, 60)
         if len(body) > MAX_BYTES:
             raise ValueError(f"{url} is larger than {MAX_BYTES // 1_000_000} MB")
         coding = r.headers.get("Content-Encoding", "identity").lower()   # some servers compress although asked not to

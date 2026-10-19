@@ -268,7 +268,7 @@
   .tbl td { padding: 6px 12px; height: 44px; border-bottom: 1px solid var(--rule-soft); }
   .tbl tr.you td { background: #f5f9ff; }
   .tbl td.page { min-width: 0; }
-  .tbl td.page a, .tbl td.page button.linkish { color: var(--ink); font-weight: 500; text-decoration: none; }
+  .tbl td.page a, .tbl td.page button.linkish { color: var(--ink); font-weight: 500; text-decoration: none; overflow-wrap: anywhere; }
   .tbl td.page a:hover { text-decoration: underline; }
   .tbl td.page small { display: block; font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }
   .tbl .narrow { width: 84px; }
@@ -712,6 +712,7 @@
   let S = null;                        // last /api/state
   let dsId = null, vId = null, designPage = null, shown = null, arrived = false, pendingScroll = null;
   let mode = null;                     // open request: edit | variant | ds | feedback | original
+  let requestFor = null;               // the design (and version) an edit or a new variant is about
   let annotating = false, hoverEl = null, hiNote = null, lastView = null, lastHash = null, appPid = null;
   let reportTab = 'report', problems = [];   // the page report's view, and its problems to mark on the original
   let notes = [];
@@ -724,11 +725,24 @@
   });
   const DRAFT_KEY = 'waib-draft:' + LOADED;   // the open request, kept over a reload of the app
   const AFTER_KEY = 'waib-after-reload';            // a message and the focus, to show again after a reload
-  const ASKED_KEY = 'waib-design-asked:' + LOADED;   // "Start designing" was sent (this tab)
-  const designAsked = () => {          // the approach asked for, only for this project (a folder name can come back)
-    try { const a = JSON.parse(sessionStorage.getItem(ASKED_KEY)); return a && a.started === settings().started ? a.approach : null; } catch (e) { return null; }
-  };
-  const markAsked = approach => sessionStorage.setItem(ASKED_KEY, JSON.stringify({approach, started: settings().started}));
+  // What Claude was asked for and hasn't done yet, kept in the project: every tab shows it as being worked on.
+  // "design" {approach}: the first design; "overall": the overall report; "build <ds>/<v> <url>": a page of a design.
+  const pending = key => (settings().asked || {})[key] || null;
+  const markAsked = changes => api('/api/asked', {asked: changes}).then(() => check(), () => {});
+  const anyBuilt = () => S.design_systems.some(d => d.variants.some(x => x.pages.length));
+  const designAsked = () => anyBuilt() ? null : (pending('design') || {}).approach || null;
+  const overallAsked = () => !!pending('overall') && !(S.overall && S.overall.at >= pending('overall').at);
+  const buildKey = (d, url) => 'build ' + d.ds.id + '/' + d.v.id + ' ' + url;
+  let settling = false;
+  function settleAsked() {             // what is done comes off the list (any tab may notice it first)
+    const done = Object.keys(settings().asked || {}).filter(k => k === 'design' ? anyBuilt() : k === 'overall' ? !overallAsked() : (() => {
+      const [, ids, url] = k.split(' '), [ds, v] = ids.split('/'), d = byId(S.design_systems, ds), x = d && byId(d.variants, v);
+      return !x || x.pages.includes(slugOf(url));
+    })());
+    if (!done.length || settling) return;
+    settling = true;
+    markAsked(Object.fromEntries(done.map(k => [k, null]))).finally(() => { settling = false; });
+  }
   function saveDraft(key) {
     if (mode) sessionStorage.setItem(key, JSON.stringify({mode, text: $('request').value}));
   }
@@ -784,7 +798,7 @@
       return renderLink();
     }
     if (s.project !== LOADED && !starting) {   // Start renamed the folder (waib-new -> waib-<site>): the notes go along
-      for (const [store, pre] of [[localStorage, 'waib-notes:'], [sessionStorage, 'waib-draft:'], [sessionStorage, 'waib-design-asked:']]) {
+      for (const [store, pre] of [[localStorage, 'waib-notes:'], [sessionStorage, 'waib-draft:']]) {
         const old = store.getItem(pre + LOADED);
         if (old !== null) { store.setItem(pre + s.project, old); store.removeItem(pre + LOADED); }
       }
@@ -1061,7 +1075,7 @@
       el.classList.toggle('hidden', !el.dataset.for.split(' ').includes(v)));
     $('create').classList.toggle('hidden', v !== 'designs');
     $('cover').classList.add('hidden');
-    if (S.design_systems.some(d => d.variants.some(x => x.pages.length))) sessionStorage.removeItem(ASKED_KEY);   // the first page is built
+    settleAsked();
     $('decide').classList.toggle('hidden', tab !== 'pages' || hasDesigns() || !!designAsked() || !Object.values(S.pages).some(p => p.report));
     renderDecide();
     renderHosts(tab);
@@ -1095,8 +1109,15 @@
     const asked = designAsked();
     empty('Claude is building the first design', settings().scratch ? 'From your description. It shows here as soon as it is there.'
       : 'You asked for a ' + (asked === 'refresh' ? 'refresh (the look stays)' : 'redesign (a new look)') + '. It shows here as soon as it is there.',
-      h('span', {class: 'dots', 'aria-hidden': 'true'}, h('i'), h('i'), h('i')));
+      [h('span', {class: 'dots', 'aria-hidden': 'true'}, h('i'), h('i'), h('i')),
+        h('p', {}, h('button', {class: 'btn', onclick: () => startDesigning(asked)}, 'Ask Claude again'),   // the request may have got lost
+          settings().scratch ? null : [' ', h('button', {class: 'btn', onclick: () => markAsked({design: null})}, 'Choose another way')])]);
     $('empty').querySelector('.logo').classList.add('pulse');
+  }
+  async function startDesigning(a, project) {   // true once Claude has it: every tab shows "building" until the first page
+    if (!await send(['Start designing: ' + a, 'Your page: ' + yourUrl(), ...context([yourUrl()])], project)) return false;
+    await markAsked({design: {approach: a}});
+    return true;
   }
 
   const crumb = parts => parts.flatMap((p, i) => [i ? h('span', {class: 'sep'}, '/') : null,   // [{label, id, go, dim}] for the toolbar
@@ -1434,7 +1455,7 @@
       const project = await startProject({scratch: true, notes: startNotes});
       if (project === null) return;
       await check();
-      if (await send(['Start designing: redesign', 'Your page: ' + yourUrl()], project)) markAsked('redesign');   // straight to the first design
+      await startDesigning('redesign', project);   // straight to the first design
       startBusy(false);
       go('designs');                   // (before the folder rename's reload, which keeps it)
       return check();
@@ -1545,19 +1566,20 @@
     const b = $('allBtn'), missing = list.filter(u => !status(u).report && !status(u).busy);
     const reports = list.filter(u => status(u).report).length, busy = list.filter(u => status(u).busy).length;
     b.classList.toggle('hidden', !list.length || !!settings().scratch);   // from scratch: nothing to report on
+    const writing = !missing.length && !busy && overallAsked();
     put(b, missing.length ? 'Report on all ' + list.length : busy ? 'Analysing ' + plural(busy, 'page') + '…'
-      : (S.overall ? 'Update' : 'Write') + ' the overall report',
+      : writing ? [h('span', {class: 'spin'}), 'Writing the overall report…'] : (S.overall ? 'Update' : 'Write') + ' the overall report',
       missing.length ? h('small', {}, missing.length + ' missing' + (list.length >= 2 ? ', then the overall report' : '')) : null);
     b.setAttribute('aria-label', [...b.childNodes].map(n => n.textContent).join(', '));   // the count and the small text read apart
     b.disabled = !missing.length && (busy > 0 || reports < 2);
-    b.title = !missing.length && !busy && reports < 2 ? 'Needs at least two page reports' : '';
+    b.title = writing ? 'Claude is on it. Click to ask again.' : !missing.length && !busy && reports < 2 ? 'Needs at least two page reports' : '';
     b.onclick = async () => {
       if (b.disabled) return;
       if (missing.length > 20 && !await ask('Analyse ' + missing.length + ' pages?', 'Claude copies each page and writes its report. That takes a while for this many pages.', 'Analyse')) return;
       if (document.activeElement === b) { const row = navRow() || $('pagesLink'); row.focus(); }   // the button is about to be disabled
       b.disabled = true;              // until the next update shows what the agent is on
       if (missing.length) analyse(missing, list.length >= 2);
-      else send(['Write the overall report']);
+      else writeOverall();
     };
   }
 
@@ -1619,8 +1641,13 @@
   }
   async function analyse(urls, overallToo) {   // "Analysing…" once the agent (or the clipboard) has the request
     if (!await send(['Analyse these pages:', ...urls.map(u => '- ' + u)].concat(overallToo ? ['Then write the overall report.'] : []))) return;
+    if (overallToo) markAsked({overall: {}});
     try { await api('/api/pages', {request: urls, add: urls.filter(u => !onTheList(u))}); } catch (e) { return toast(e.message); }   // analysed: on the list
     check();
+  }
+
+  async function writeOverall() {
+    if (await send(['Write the overall report'])) markAsked({overall: {}});
   }
 
   function ring(score, partial) {
@@ -1671,11 +1698,15 @@
     const [o, cl, data] = await Promise.all([file('reports/_overall.json'), checklist(),
       Promise.all(reported.map(async u => ({url: u, facts: await file('content/' + slugOf(u) + '.json'), report: await file('reports/' + slugOf(u) + '.json')})))]);
     if (route().view !== 'overall') return;
+    if (!o && overallAsked()) {
+      empty('Claude is writing the overall report', 'It shows here as soon as it is there.', h('span', {class: 'dots', 'aria-hidden': 'true'}, h('i'), h('i'), h('i')));
+      return $('empty').querySelector('.logo').classList.add('pulse');
+    }
     if (!o) {
       return empty('No overall report yet', reported.length >= 2
         ? 'Claude reads the ' + reported.length + ' page reports and answers: what state is the site in, how far should the redesign go, and what must the new design deliver?'
         : 'It needs at least two page reports. Analyse more pages first.',
-        reported.length >= 2 ? h('button', {class: 'btn claude', onclick: () => send(['Write the overall report'])}, 'Write the overall report') : null);
+        reported.length >= 2 ? h('button', {class: 'btn claude', onclick: writeOverall}, 'Write the overall report') : null);
     }
     showArea('doc');
     // Patterns are counted from the verdicts, never written by hand.
@@ -1875,8 +1906,7 @@
         go('designs');
         return openRequest('original');   // the request stays open when the view switches to Designs
       }
-      if (!await send(['Start designing: ' + a, 'Your page: ' + you, ...context([you])])) return;   // not delivered: the choice stays here for another try
-      markAsked(a);                    // until the first design is there: "building it"
+      if (!await startDesigning(a)) return;   // not delivered: the choice stays here for another try
       dsId = null;
       go('designs');
     };
@@ -2004,11 +2034,17 @@
     if (builtIn(d, designPage)) { showArea('stage'); return loadFrame(pageFile(d, designPage)); }
     if (asked) return building();
     empty(designName(ds, v) + ' isn\'t built on ' + labelOf(urlOfSlug(designPage)) + ' yet', 'Claude builds it on this page with the same look and layout.',
-      h('button', {class: 'btn claude', onclick: () => buildOn(d, [urlOfSlug(designPage)])}, 'Build it on this page'));
+      buildButton(d, [urlOfSlug(designPage)], () => 'Build it on this page'));
   }
   const urlOfSlug = slug => redesignList().find(u => S.copied[u] === slug) || Object.keys(S.copied).find(u => S.copied[u] === slug) || '';   // the listed address first
-  function buildOn(d, urls) {
-    send(['Build ' + designName(d.ds, d.v, true) + ' on:', ...urls.map(u => '- ' + u), ...context(urls)]);
+  async function buildOn(d, urls) {
+    if (await send(['Build ' + designName(d.ds, d.v, true) + ' on:', ...urls.map(u => '- ' + u), ...context(urls)]))
+      markAsked(Object.fromEntries(urls.map(u => [buildKey(d, u), {}])));
+  }
+  function buildButton(d, urls, label) {   // "Building…" in every tab once Claude has it (a click asks again)
+    const todo = urls.filter(u => !pending(buildKey(d, u)));
+    return todo.length ? h('button', {class: 'btn claude', onclick: () => buildOn(d, todo)}, label(todo.length))
+      : h('button', {class: 'btn claude', 'aria-busy': 'true', title: 'Claude is on it. Click to ask again.', onclick: () => buildOn(d, urls)}, h('span', {class: 'spin'}), 'Building…');
   }
   // Every design request names the reports it rests on and what to do with them; Claude decides how much to read.
   function context(urls) {
@@ -2093,14 +2129,14 @@
     $('cover').classList.remove('hidden');
     put($('cover'), h('b', {}, builtList.length + ' of ' + plural(list.length, 'page') + ' built'),
       h('span', {class: 'meter'}, h('i', {style: 'width:' + (list.length ? 100 * builtList.length / list.length : 0) + '%'})),
-      missing.length ? h('button', {class: 'btn claude', onclick: () => d.original ? analyse(missing) : buildOn(d, missing)},
-        (d.original ? 'Copy the other ' : 'Build the other ') + missing.length) : null);
+      !missing.length ? null : d.original ? h('button', {class: 'btn claude', onclick: () => analyse(missing)}, 'Copy the other ' + missing.length)
+        : buildButton(d, missing, n => 'Build the other ' + n));
     const url = urlOfSlug(slug);
     setCrumb(crumb([{label: 'Website', dim: true}, {label: url ? labelOf(url) : 'No page'}]));
     $('exportBtn').disabled = !builtList.length;
     if (slug && builtIn(d, slug)) { showArea('stage'); return loadFrame(pageFile(d, slug)); }
     empty(url ? labelOf(url) + ' isn\'t built yet' : 'No page to show', d.original ? 'It has to be copied first.' : 'Claude builds it with ' + name + '.',
-      url && !d.original ? h('button', {class: 'btn claude', onclick: () => buildOn(d, [url])}, 'Build this page') : null);
+      url && !d.original ? buildButton(d, [url], () => 'Build this page') : null);
   }
   $('exportBtn').onclick = async () => {
     const d = chosenDesign(), n = redesignList().filter(u => builtIn(d, slugOf(u))).length;
@@ -2142,7 +2178,7 @@
   async function sendMediaChat() {
     const text = chatTa.value.trim(), url = mediaChat.url;
     if (!text || !url) return chatTa.focus();
-    if (await send(['Media not copied', 'Page: ' + url, 'Request: ' + text])) { chatTa.value = ''; setChat(false); }
+    if (await send(['Media not copied', 'Page: ' + url, 'Request: ' + text])) { chatTa.value = ''; setChat(false); chatBtn.focus(); }
   }
   const PLACEHOLDER = __PLACEHOLDER__;   // the look of common.media_placeholder
   const mb = n => !n ? '' : n >= 1e5 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';   // common.megabytes
@@ -2554,9 +2590,15 @@
   function drawPanel() {
     const v = S && route().view;
     const designsReady = v === 'designs' && (dsId || mode === 'ds'), siteReady = v === 'site' && chosenDesign();
-    const {ds} = S ? current() : {};
-    if (mode === 'variant' && !ds) closePanel();                        // switched to the original
+    const {ds, v: variant} = S ? current() : {};
+    const gone = mode && requestFor && (!byId(S.design_systems, requestFor.ds) || requestFor.v && !byId(byId(S.design_systems, requestFor.ds).variants, requestFor.v));
+    if (gone) {                        // discarded in another tab: never sent to another design
+      const was = requestFor;
+      closePanel();
+      toast(upper(was.ds) + (was.v ? ' / ' + upper(was.v) : '') + ' was discarded. Your text stays for your next request.');
+    } else if (mode === 'variant' && !ds) closePanel();                 // switched to the original
     else if (mode) mode = fitMode(v, ds);
+    requestFor = v === 'designs' && ds && (mode === 'variant' || mode === 'edit') ? {ds: ds.id, v: mode === 'edit' && variant ? variant.id : null} : null;
     const open = !!mode && !!(designsReady || siteReady);
     $('panel').classList.toggle('hidden', !open);
     if (!open) return;

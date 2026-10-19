@@ -138,11 +138,13 @@ def state(project):
         pages[slug] = {"score": measure.score(facts.get("checks") or {}, judged), "report": isinstance(report, dict),
                        "partial": not judged, "media": {"count": len(wanted), "bytes": sum(wanted.values())}}
     overall = read_json(project / "reports" / "_overall.json")
+    if isinstance(overall, dict):   # when it was written: a request for it (settings "asked") is done once it's newer
+        overall = {"recommend": overall.get("recommend"), "at": time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime((project / "reports" / "_overall.json").stat().st_mtime))}
     failed = sitemap.get("failed")
     failed = {canonical(u): str(why) for u, why in failed.items() if canonical(u) not in by_url} if isinstance(failed, dict) else {}
     titles = {canonical(p["url"]): str(p.get("title") or "") for p in sitemap_pages(sitemap)}
     return {**data, "hosts": hosts(project, sitemap), "original": html_pages(project / ORIGINAL), "copied": by_url, "failed": failed, "titles": titles,
-            "pages": pages, "overall": {"recommend": overall.get("recommend")} if isinstance(overall, dict) else None,
+            "pages": pages, "overall": overall if isinstance(overall, dict) else None,
             "ideas": read_dict(project / "ideas.json"), "settings": settings(project)}
 
 

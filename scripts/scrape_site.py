@@ -26,7 +26,7 @@ import site_index  # noqa: E402
 from measure import DESKTOP  # noqa: E402
 from common import (  # noqa: E402
     CONSENT_PARTS, CSS_IMPORT_RE, HOST, IMAGE_ENDINGS, IMAGE_WIDTH, MEDIA_BUDGET, MEDIA_LIMIT, MEDIA_STYLE, SRCSET_RE, UA, asset_filename, blocks, canonical,
-    css_code, decode_text, extract_css_urls, guard_public, in_markup, is_same_domain, media_placeholder, megabytes, now, one_line, parse_srcset, plural,
+    css_code, decode_text, extract_css_urls, guard_public, in_markup, is_same_domain, local_ip, media_placeholder, megabytes, now, one_line, parse_srcset, plural,
     private, project_lock, read_dict, read_text, site_root, sitemap_pages, strip_scripts, url_to_filename, with_scheme, write_json, write_text,
 )
 
@@ -57,6 +57,7 @@ def extract_asset_urls(page, base_url):
 
 
 MAX_ASSET = 20_000_000  # bytes per asset
+MAX_RUN = 500_000_000   # bytes of assets per copy run
 MAX_ASSETS = 2000        # files per run
 MAX_SIZE_ASKS = 30       # per page: images whose size the page didn't tell, asked of the server
 
@@ -92,7 +93,7 @@ def copied_before(assets_dir, url):
 
 def download_asset(url, assets_dir, local_ok, room):
     """Download an asset (again once per run: the site may have changed it) and return its file name, or None.
-    An image the project doesn't hold yet counts against MEDIA_LIMIT and room["left"] by its real size.
+    An image counts against MEDIA_LIMIT and room["left"] by its real size (a new one replaces the old file).
     room["final"]: url -> the address it came from after redirects (a stylesheet's own references resolve there)."""
     old = copied_before(assets_dir, url)
     if url in room["fetched"]:
@@ -102,17 +103,21 @@ def download_asset(url, assets_dir, local_ok, room):
         if not local_ok and private(url):
             raise ValueError("it leads to a local or private address")
         with opener(local_ok)(Request(url, headers={"User-Agent": UA}), timeout=30) as r:
-            body, kind, coding, room["final"][url] = r.read(MAX_ASSET + 1), r.headers.get("Content-Type", ""), r.headers.get("Content-Encoding", "").lower(), r.geturl()
+            body, kind, coding, room["final"][url] = site_index.read_all(r, MAX_ASSET, 120), r.headers.get("Content-Type", ""), r.headers.get("Content-Encoding", "").lower(), r.geturl()
         if coding in ("gzip", "x-gzip", "deflate"):
             body = site_index.inflate(body, coding, url)
         if len(body) > MAX_ASSET:
             raise ValueError(f"larger than {MAX_ASSET // 1_000_000} MB")
+        if room["bytes"] + len(body) > MAX_RUN:
+            raise ValueError(f"past {MAX_RUN // 1_000_000} MB of files in this copy")
         name = asset_filename(url, kind)   # style.php, /css?family=…: an ending for its type (the CSS step and an export's host need it)
-        if (kind.startswith("image/") or Path(name).suffix.lower() in IMAGE_ENDINGS) and not old and url not in room["charged"]:
-            if len(body) > min(MEDIA_LIMIT, max(room["left"], 0)):
+        if kind.startswith("image/") or Path(name).suffix.lower() in IMAGE_ENDINGS:
+            more = len(body) - (old[0].stat().st_size if old else room["charged"].get(url, 0))   # counted already: the copy's file, or what leave_out was told
+            if len(body) > MEDIA_LIMIT or more > max(room["left"], 0):
                 raise ValueError("an image over 2 MB, or past the project's 50 MB of images: it loads from the site")
-            room["left"] -= len(body)
-            room["charged"].add(url)
+            room["left"] -= more
+            room["charged"][url] = len(body)
+        room["bytes"] += len(body)
         (assets_dir / name).write_bytes(body)
         return name
     except Exception as e:
@@ -218,7 +223,7 @@ def leave_out(page, local_ok, room, assets_dir):
             if src in room["kept"] or size <= MEDIA_LIMIT and src not in room["out"] and size <= room["left"]:
                 if src not in room["kept"] and size:   # an unknown size is counted when it downloads
                     room["left"] -= size
-                    room["charged"].add(src)
+                    room["charged"][src] = size
                 room["kept"].add(src)
                 continue
             room["out"].add(src)
@@ -459,7 +464,7 @@ def scrape(urls, output_dir):
     landed = {canonical(p["network"]["final_url"]): u for u, p in pages.items()   # final address -> the page that got there (also earlier runs)
               if not p.get("same_as") and isinstance(p.get("network"), dict) and isinstance(p["network"].get("final_url"), str)}
     site_private = private(urls[0], unsure=False)   # an intranet site may load intranet files; a public one may not
-    room = {"left": MEDIA_BUDGET - media_kept(assets_dir), "kept": set(), "out": set(), "charged": set(), "fetched": set(), "final": {}}
+    room = {"left": MEDIA_BUDGET - media_kept(assets_dir), "kept": set(), "out": set(), "charged": {}, "fetched": set(), "final": {}, "bytes": 0}
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -495,6 +500,10 @@ def scrape(urls, output_dir):
                     continue
                 if private(page.url) and not site_private:   # also a www. twin or a rebinding name that points home
                     skip(url, f"it redirects to a local or private address: {page.url}")
+                    continue
+                server = response.server_addr()
+                if site_private and server and not local_ip(server["ipAddress"].strip("[]")):   # "local" came from one DNS answer, the page from the internet
+                    skip(url, f"it came from a public address ({server['ipAddress']}), not from this computer or network")
                     continue
                 if not is_same_domain(page.url, home):   # e.g. bbc.co.uk -> bbc.com: copy what the visitor gets
                     print(f"    Note: redirects to {page.url}; copied from there")

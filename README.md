@@ -12,7 +12,6 @@
 - **Start:** run `/waib:waib https://your-website.com` in Claude Code. Any page of the site works, and so does the folder or Git repository of its code.
 - **No website yet?** Run `/waib:waib` and choose **Start from scratch**.
 - **Just looking?** Ask Claude to open the Waib example: a finished project for a made-up shop.
-- **Licence:** free for any use ([0BSD](LICENSE)).
 
 ## Install
 
@@ -130,7 +129,3 @@ install.sh / uninstall.sh    install from a clone
 ```
 
 The browser that takes the screenshots (Playwright's Chromium) is shared with other projects and never deleted automatically. It lives in `~/Library/Caches/ms-playwright` on macOS and `~/.cache/ms-playwright` on Linux. Your answers about which other sites copies may load from are kept in `~/.claude/waib/hosts.json`; uninstalling leaves both in place.
-
-## Licence
-
-[Zero-Clause BSD](LICENSE): use, copy, change and sell it, for any purpose, without asking and without naming the author.

@@ -1,7 +1,7 @@
 {
   "name": "waib",
   "description": "Waib: redesign an outdated website in a local app. Pick the pages, get a report on each, iterate designs side by side with annotations, and export the finished pages.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "ai41-MCK"
   },

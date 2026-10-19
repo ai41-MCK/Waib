@@ -64,6 +64,17 @@ COPY_CSP = "script-src 'none'; object-src 'none'"
 # copies are not limited.
 FRAMES_CSP = "; frame-src 'self' {hosts}"
 LOADS_CSP = "; default-src 'self' data: blob: {hosts}; style-src 'self' 'unsafe-inline' data: {hosts}; form-action 'none'"
+# back in the app as soon as the new link is opened in another tab (app.html stores the token there)
+RESTARTED = b"""<!doctype html><meta charset="utf-8"><title>Waib</title>
+<p style="font: 16px/1.5 system-ui, sans-serif; max-width: 34em; margin: 4em auto">This link doesn't open the app (the app was restarted, or the link
+is incomplete). Ask Claude to open the app, then open the link Claude gives you. This tab follows by itself.</p>
+<script>
+history.replaceState(null, '', '/' + location.hash);   // an old token out of the address bar
+const key = 'waib-token:' + location.port, go = t => location.replace('/?k=' + encodeURIComponent(t) + location.hash);
+addEventListener('storage', e => { if (e.key === key && e.newValue) go(e.newValue); });
+const t = localStorage.getItem(key);
+if (t && sessionStorage.getItem(key) !== t) { sessionStorage.setItem(key, t); go(t); }   // once: it may be the old one
+</script>"""
 GUI_CSP = "frame-ancestors 'none'"  # no other site may frame the GUI
 LOCK = threading.Lock()  # one change to the project at a time
 DOWNLOADS = threading.Lock()  # media the user asked for: one download at a time
@@ -362,6 +373,8 @@ class Handler(SimpleHTTPRequestHandler):
             nonce = str(q.get("nonce", ""))[:64]
             return self.reply({"pid": os.getpid(), "proof": hmac.new(app["key"].encode(), nonce.encode(), "sha256").hexdigest()})
         if not self.trusted() or not self.admitted(q, path.startswith("/api/")):
+            if path == "/" and self.trusted():   # an old tab reloaded after a restart
+                return self.reply(RESTARTED, 403, kind="text/html")
             return self.send_error(403, explain="Open the app with the link app.py printed (it carries the key).")
         index = app["index"]
         if path == "/":
@@ -493,6 +506,16 @@ class Handler(SimpleHTTPRequestHandler):
                         opts["requested"] = mv.merge(opts.get("requested", []), asked)
                     result = len(mv.change_settings(project, change)["redesign"])
                     mv.retry(project, [canonical(str(u)) for u in asked])
+                elif self.path == "/api/asked":   # sent to Claude: shown as being worked on in every tab, {key: null} when done
+                    def change(opts):
+                        asked = opts.get("asked") if isinstance(opts.get("asked"), dict) else {}
+                        for key, what in (body.get("asked") or {}).items():
+                            if what is None:
+                                asked.pop(key, None)
+                            else:
+                                asked[key] = {**(what if isinstance(what, dict) else {}), "at": now()}
+                        opts["asked"] = asked
+                    result = len(mv.change_settings(project, change)["asked"])
                 elif self.path == "/api/hosts":   # the user's answer: let the copies load from these sites, or keep them blocked
                     names = lambda k: [str(h) for h in body.get(k) or [] if isinstance(h, str)]  # noqa: E731
                     result = mv.answer_hosts(project, names("allow"), names("block"))
