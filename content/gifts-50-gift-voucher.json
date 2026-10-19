@@ -1,0 +1,420 @@
+{
+  "url": "http://www.millbrookhome.example/gifts/50-gift-voucher.html",
+  "title": "€50 Gift Voucher - Gifts - Millbrook Home & Garden",
+  "description": "",
+  "modernization": 0,
+  "modernization_checks": [
+    {
+      "check": "Media queries",
+      "points": 20,
+      "passed": false,
+      "detail": "absent"
+    },
+    {
+      "check": "Flexbox or grid layout",
+      "points": 20,
+      "passed": false,
+      "detail": "flex no, grid no, floats no"
+    },
+    {
+      "check": "No tables for layout",
+      "points": 15,
+      "passed": false,
+      "detail": "3 layout tables"
+    },
+    {
+      "check": "Semantic HTML5 elements",
+      "points": 10,
+      "passed": false,
+      "detail": "none"
+    },
+    {
+      "check": "No legacy markup (<font>, <center>, bgcolor)",
+      "points": 15,
+      "passed": false,
+      "detail": "2 found"
+    },
+    {
+      "check": "CSS custom properties",
+      "points": 10,
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "check": "Web fonts",
+      "points": 5,
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "check": "Modern CSS effects",
+      "points": 5,
+      "passed": false,
+      "detail": ""
+    }
+  ],
+  "paragraphs": 13,
+  "longest_paragraph_words": 35,
+  "average_sentence_words": 7.5,
+  "words": 344,
+  "headings": 10,
+  "images": 7,
+  "links": 48,
+  "downloads": 0,
+  "colors": [
+    {
+      "hex": "#cc0000",
+      "count": 6,
+      "role": "accent text / headings / highlights"
+    },
+    {
+      "hex": "#2f5420",
+      "count": 5,
+      "role": "brand band / button fill"
+    },
+    {
+      "hex": "#4c7f2f",
+      "count": 4,
+      "role": "brand band / button fill"
+    },
+    {
+      "hex": "#d5dcc0",
+      "count": 2,
+      "role": "light surface / section background"
+    },
+    {
+      "hex": "#1a3f9e",
+      "count": 2,
+      "role": "link / accent"
+    },
+    {
+      "hex": "#cc3300",
+      "count": 2,
+      "role": "link / accent"
+    }
+  ],
+  "neutrals": [
+    {
+      "hex": "#ffffff",
+      "count": 7,
+      "role": "light surface / section background"
+    },
+    {
+      "hex": "#cccccc",
+      "count": 5,
+      "role": "border / divider"
+    },
+    {
+      "hex": "#999999",
+      "count": 3,
+      "role": "body / secondary text"
+    },
+    {
+      "hex": "#777777",
+      "count": 3,
+      "role": "body / secondary text"
+    }
+  ],
+  "fonts": [
+    "Verdana",
+    "Georgia"
+  ],
+  "sizes": [
+    "10px",
+    "11px",
+    "9px",
+    "20px",
+    "12px"
+  ],
+  "logo": {
+    "src": "scraped/assets/logo-d9fc122a.png",
+    "alt": "Millbrook Home & Garden"
+  },
+  "nav": [
+    {
+      "text": "Home",
+      "href": "http://www.millbrookhome.example/"
+    },
+    {
+      "text": "Kitchen",
+      "href": "http://www.millbrookhome.example/kitchen/"
+    },
+    {
+      "text": "Home & Living",
+      "href": "http://www.millbrookhome.example/home-living/"
+    },
+    {
+      "text": "Lighting",
+      "href": "http://www.millbrookhome.example/lighting/"
+    },
+    {
+      "text": "Garden",
+      "href": "http://www.millbrookhome.example/garden/"
+    },
+    {
+      "text": "Gifts",
+      "href": "http://www.millbrookhome.example/gifts/"
+    },
+    {
+      "text": "Sale!",
+      "href": "http://www.millbrookhome.example/sale.html"
+    }
+  ],
+  "footer": "About Us | Contact Us | Delivery | Returns | FAQ | Terms & Conditions | Privacy Policy | Site Map © 2003-2011 Millbrook Home & Garden. All rights reserved. Unit 4, Brook Street, Millbrook You are visitor no. 0048213 Best viewed with Internet Explorer 7 or Firefox at 1024 x 768 Site designed by WebWorks Design",
+  "contact": {
+    "phone": "01632 960 412"
+  },
+  "network": {
+    "load_ms": 30,
+    "load_incomplete": false,
+    "requests": 10,
+    "bytes": 79939,
+    "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+    "final_url": "http://www.millbrookhome.example/gifts/50-gift-voucher.html"
+  },
+  "copied": "2026-10-19T13:17:42",
+  "screens": {
+    "desktop": "content/gifts-50-gift-voucher.desktop.jpg",
+    "phone": "content/gifts-50-gift-voucher.phone.jpg"
+  },
+  "rendered": {
+    "desktop": {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "sideways": false,
+      "scale": 1,
+      "bodyFont": 11,
+      "lowContrast": [
+        {
+          "selector": "span.was:nth-of-type(1)",
+          "ratio": 2.59,
+          "text": "€59.00"
+        },
+        {
+          "selector": "li:nth-of-type(1) > span.date",
+          "ratio": 2.85,
+          "text": "12/03/2011"
+        },
+        {
+          "selector": "li:nth-of-type(2) > span.date",
+          "ratio": 2.85,
+          "text": "20/01/2011"
+        },
+        {
+          "selector": "li:nth-of-type(3) > span.date",
+          "ratio": 2.85,
+          "text": "01/12/2010"
+        },
+        {
+          "selector": "div.crumb",
+          "ratio": 4.48,
+          "text": "Home > Gifts > €50 Gift Voucher"
+        },
+        {
+          "selector": "a.small",
+          "ratio": 4.48,
+          "text": "Click here to enlarge"
+        },
+        {
+          "selector": "p.small:nth-of-type(1)",
+          "ratio": 4.48,
+          "text": "Product code: MB-1232"
+        },
+        {
+          "selector": "span.small:nth-of-type(2)",
+          "ratio": 4.48,
+          "text": "inc. VAT"
+        }
+      ],
+      "lowContrastCount": 16,
+      "lowContrastPairs": 6,
+      "contrastMeasured": 97,
+      "overImages": 0,
+      "tapTargets": 58,
+      "smallTargets": 8,
+      "smallExamples": [
+        "div.box:nth-of-type(1) > ul > li:nth-of-type(3) > a",
+        "li:nth-of-type(4) > a",
+        "li:nth-of-type(5) > a.on",
+        "a.sale",
+        "div.c > input.text:nth-of-type(1)"
+      ],
+      "firstScreenActions": [
+        "input",
+        "input",
+        "input",
+        "input",
+        "input",
+        "input"
+      ],
+      "navWider": [],
+      "broken": [],
+      "upscaled": [],
+      "banners": [],
+      "pinned": false
+    },
+    "phone": {
+      "width": 980,
+      "scrollWidth": 980,
+      "sideways": false,
+      "scale": 0.398,
+      "bodyFont": 4,
+      "lowContrast": [
+        {
+          "selector": "span.was:nth-of-type(1)",
+          "ratio": 2.59,
+          "text": "€59.00"
+        },
+        {
+          "selector": "li:nth-of-type(1) > span.date",
+          "ratio": 2.85,
+          "text": "12/03/2011"
+        },
+        {
+          "selector": "li:nth-of-type(2) > span.date",
+          "ratio": 2.85,
+          "text": "20/01/2011"
+        },
+        {
+          "selector": "li:nth-of-type(3) > span.date",
+          "ratio": 2.85,
+          "text": "01/12/2010"
+        },
+        {
+          "selector": "div.crumb",
+          "ratio": 4.48,
+          "text": "Home > Gifts > €50 Gift Voucher"
+        },
+        {
+          "selector": "a.small",
+          "ratio": 4.48,
+          "text": "Click here to enlarge"
+        },
+        {
+          "selector": "p.small:nth-of-type(1)",
+          "ratio": 4.48,
+          "text": "Product code: MB-1232"
+        },
+        {
+          "selector": "span.small:nth-of-type(2)",
+          "ratio": 4.48,
+          "text": "inc. VAT"
+        }
+      ],
+      "lowContrastCount": 16,
+      "lowContrastPairs": 6,
+      "contrastMeasured": 97,
+      "overImages": 0,
+      "tapTargets": 58,
+      "smallTargets": 39,
+      "smallExamples": [
+        "form.search > input.text:nth-of-type(1)",
+        "form.search > input.btn:nth-of-type(2)",
+        "table.nav > tbody > tr > td:nth-of-type(1) > a",
+        "table.nav > tbody > tr > td:nth-of-type(2) > a",
+        "table.nav > tbody > tr > td:nth-of-type(3) > a"
+      ],
+      "firstScreenActions": [
+        "input",
+        "input",
+        "input",
+        "input",
+        "input",
+        "input",
+        "input",
+        "input",
+        "input",
+        "input"
+      ],
+      "navWider": [],
+      "broken": [],
+      "upscaled": [],
+      "banners": [],
+      "pinned": false
+    }
+  },
+  "checks": {
+    "structure.h1": {
+      "verdict": "pass",
+      "evidence": "1 H1: €50 Gift Voucher"
+    },
+    "structure.outline": {
+      "verdict": "warn",
+      "evidence": "starts with h3"
+    },
+    "action.contact": {
+      "verdict": "warn",
+      "evidence": "not clickable: phone"
+    },
+    "nav.link_text": {
+      "verdict": "pass",
+      "evidence": "link texts say where they go"
+    },
+    "mobile.viewport": {
+      "verdict": "fail",
+      "evidence": "no viewport meta tag: phones show a shrunk desktop page"
+    },
+    "action.first_screen": {
+      "verdict": "pass",
+      "evidence": "input, input, input"
+    },
+    "nav.mobile": {
+      "verdict": "pass",
+      "evidence": "navigation fits"
+    },
+    "mobile.overflow": {
+      "verdict": "pass",
+      "evidence": "no sideways scrolling, but the page is laid out 980 px wide and shrunk to fit"
+    },
+    "mobile.font": {
+      "verdict": "fail",
+      "evidence": "body text appears at 4 px (the page is shrunk to 40 %)"
+    },
+    "mobile.tap": {
+      "verdict": "fail",
+      "evidence": "39 of 58 links, buttons and form fields smaller than 24 px",
+      "selector": "form.search > input.text:nth-of-type(1)"
+    },
+    "a11y.contrast": {
+      "verdict": "fail",
+      "evidence": "16 text elements in 6 colour pairs below WCAG AA, e.g. “€59.00” at 2.59:1",
+      "selector": "span.was:nth-of-type(1)"
+    },
+    "a11y.alt": {
+      "verdict": "warn",
+      "evidence": "6 images without alt text"
+    },
+    "a11y.lang": {
+      "verdict": "fail",
+      "evidence": "no lang attribute"
+    },
+    "tech.layout": {
+      "verdict": "fail",
+      "evidence": "modernization score 0/100; missing: Media queries, Flexbox or grid layout, No tables for layout, Semantic HTML5 elements, No legacy markup (<font>, <center>, bgcolor), CSS custom properties, Web fonts, Modern CSS effects"
+    },
+    "tech.weight": {
+      "verdict": "pass",
+      "evidence": "80 KB in 10 requests"
+    },
+    "tech.speed": {
+      "verdict": "pass",
+      "evidence": "loaded in 30 ms"
+    },
+    "tech.https": {
+      "verdict": "fail",
+      "evidence": "http"
+    },
+    "seo.title": {
+      "verdict": "pass",
+      "evidence": "“€50 Gift Voucher - Gifts - Millbrook Home & Garden”"
+    },
+    "seo.description": {
+      "verdict": "warn",
+      "evidence": "no meta description"
+    },
+    "trust.legal": {
+      "verdict": "warn",
+      "evidence": "links to privacy"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+/* Millbrook Green: the shop's own green and cream, made calm and readable */
+:root {
+  --color-primary: #2f5420; --color-primary-light: #4c7f2f; --color-primary-dark: #1f3a15; --color-primary-50: #eef3e6;
+  --color-secondary: #8a6d2f; --color-secondary-light: #b8964f; --color-secondary-dark: #5e4a1f; --color-secondary-50: #f6f0e1;
+  --color-accent: #e3b448;
+  --color-bg: #fbfaf4; --color-bg-alt: #f1efe1; --color-surface: #ffffff;
+  --color-text: #23301c; --color-text-muted: #5b6553; --color-border: #e2dece;
+  --font-display: "Fraunces", Georgia, serif; --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --text-xs: .8125rem; --text-sm: .9375rem; --text-base: 1.0625rem; --text-lg: 1.25rem; --text-xl: 1.5rem;
+  --text-2xl: 1.875rem; --text-3xl: 2.5rem; --text-4xl: 3.25rem;
+  --weight-normal: 400; --weight-medium: 500; --weight-semibold: 600; --weight-bold: 700;
+  --leading-tight: 1.15; --leading-normal: 1.55;
+  --space-xs: .25rem; --space-sm: .5rem; --space-md: 1rem; --space-lg: 1.5rem; --space-xl: 2.5rem; --space-2xl: 4rem; --space-3xl: 6rem;
+  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgba(35, 48, 28, .08); --shadow-md: 0 8px 24px rgba(35, 48, 28, .10);
+  --container-max: 1200px; --container-pad: clamp(1rem, 4vw, 2rem);
+}

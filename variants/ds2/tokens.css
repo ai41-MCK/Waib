@@ -1,0 +1,18 @@
+/* Brook Street: a new look. Black and white, one warm tomato accent, products on soft colour tiles */
+:root {
+  --color-primary: #141414; --color-primary-light: #3a3a3a; --color-primary-dark: #000000; --color-primary-50: #f2f2ef;
+  --color-secondary: #e8e3d4; --color-secondary-light: #f3efe3; --color-secondary-dark: #cfc7b0; --color-secondary-50: #faf8f2;
+  --color-accent: #ff5a2a;
+  --tile-sage: #dfe8d6; --tile-sky: #dbe5f2; --tile-peach: #f8e0d2; --tile-butter: #f6ecc4; --tile-blush: #f3dde3;
+  --color-bg: #fbfbf8; --color-bg-alt: #f1f0ea; --color-surface: #ffffff;
+  --color-text: #141414; --color-text-muted: #5f5f5a; --color-border: #e2e0d8;
+  --font-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --text-xs: .75rem; --text-sm: .875rem; --text-base: 1rem; --text-lg: 1.25rem; --text-xl: 1.625rem;
+  --text-2xl: 2.25rem; --text-3xl: 3.5rem; --text-4xl: 5.75rem;
+  --weight-normal: 400; --weight-medium: 500; --weight-semibold: 600; --weight-bold: 700;
+  --leading-tight: .98; --leading-normal: 1.55;
+  --space-xs: .25rem; --space-sm: .5rem; --space-md: 1rem; --space-lg: 1.5rem; --space-xl: 2.5rem; --space-2xl: 4.5rem; --space-3xl: 7rem;
+  --radius-sm: 0; --radius-md: 2px; --radius-lg: 4px; --radius-full: 999px;
+  --shadow-sm: none; --shadow-md: 0 18px 40px rgba(0, 0, 0, .08);
+  --container-max: 1320px; --container-pad: clamp(1rem, 4vw, 2.5rem);
+}

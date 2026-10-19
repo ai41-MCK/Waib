@@ -1,0 +1,133 @@
+{
+ "summary": "The contact page has to make it easy to reach the shop. It offers a form, phone, fax, email and the address, but the phone number and email are plain text (no tap to call), opening hours are missing here, and the form is a fixed-width table. Most important: tap-to-call, email and the shop's hours in the first screen on a phone.",
+ "audience": "Customers with a question about a product or an order.",
+ "tasks": [
+  "Call or email the shop",
+  "Send a question about an order",
+  "Find the shop"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "Heading „Contact Us“ and the first sentence."
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "Calling needs copying the number: „Telephone: 01632 960 412“ is plain text, as is the email.",
+   "selector": "td.main > p:nth-of-type(2)"
+  },
+  "content.complete": {
+   "verdict": "warn",
+   "evidence": "Opening hours of the phone line are there, the shop's opening hours and a map link are not."
+  },
+  "content.current": {
+   "verdict": "warn",
+   "evidence": "A fax number („01632 960 413“) as a main contact option."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "Short and plain."
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No errors found."
+  },
+  "content.duplicate": {
+   "verdict": "pass",
+   "evidence": "Unique content."
+  },
+  "structure.scannable": {
+   "verdict": "warn",
+   "evidence": "The form comes first; phone and email are below it under „Other ways to contact us“."
+  },
+  "action.primary": {
+   "verdict": "warn",
+   "evidence": "The form's „Send message“ sits next to „Clear“, which wipes the form.",
+   "selector": "form[action*=\"contact\"]"
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "Seven green tabs (Home … Sale!) plus a second department list in the sidebar; the current tab is marked yellow, but Delivery, Returns and Contact live only in the footer.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The green house-and-leaf logo with the italic Millbrook wordmark, dark green #2f5420 / #4c7f2f and cream surfaces: recognisable on every page and fitting for a home and garden shop. Verdana 11 px is just old, not brand.",
+   "selector": "tr.header a > img"
+  },
+  "visual.images": {
+   "verdict": "n/a",
+   "evidence": "No images in the content."
+  },
+  "visual.hierarchy": {
+   "verdict": "warn",
+   "evidence": "Form, phone and address have the same weight."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, nav, sidebar boxes and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "pass",
+   "evidence": "Full address, phone and email on the page."
+  }
+ },
+ "inventory": [
+  {
+   "block": "Intro",
+   "selector": "td.main > p:nth-of-type(1)",
+   "action": "keep",
+   "why": "Says when they answer."
+  },
+  {
+   "block": "Contact form",
+   "selector": "form[action*=\"contact\"]",
+   "action": "rewrite",
+   "why": "Phone-friendly form without the Clear button."
+  },
+  {
+   "block": "Phone, fax, email",
+   "selector": "td.main > p:nth-of-type(2)",
+   "action": "rewrite",
+   "why": "Tap-to-call and mailto links first; drop the fax."
+  },
+  {
+   "block": "Address",
+   "selector": "td.main > p:nth-of-type(3)",
+   "action": "keep",
+   "why": "With opening hours and a map link."
+  }
+ ],
+ "keep": [
+  "Phone 01632 960 412 and its hours",
+  "Email address",
+  "Shop address",
+  "Answer within 2 working days"
+ ],
+ "fix": [
+  {
+   "text": "Phone and email are not links",
+   "severity": "high",
+   "check": "action.contact"
+  },
+  {
+   "text": "„Clear“ button next to „Send“",
+   "severity": "low",
+   "check": "action.primary",
+   "selector": "form[action*=\"contact\"]"
+  },
+  {
+   "text": "No shop opening hours",
+   "severity": "medium",
+   "check": "content.complete"
+  }
+ ],
+ "add": [
+  "Shop opening hours and a map link"
+ ],
+ "design_input": [
+  "Call, email and visit as three cards at the top",
+  "Form below",
+  "Opening hours"
+ ]
+}

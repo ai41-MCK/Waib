@@ -1,0 +1,120 @@
+{
+ "summary": "The delivery page answers what delivery costs and how long it takes. The facts are clear and in a table, but the page doesn't link to returns or say when free delivery applies at checkout, and the table is unreadable on a phone. Most important: the costs as a short, phone-friendly list.",
+ "audience": "Customers about to order, checking cost and time.",
+ "tasks": [
+  "Find the delivery cost",
+  "Find the delivery time",
+  "Check whether they deliver to their area"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "Heading „Delivery Information“ and the first sentence."
+  },
+  "purpose.tasks": {
+   "verdict": "pass",
+   "evidence": "The table gives price and time per option.",
+   "selector": "table.spec"
+  },
+  "content.complete": {
+   "verdict": "warn",
+   "evidence": "No link to returns, no cut-off time for standard delivery, „Islands … please call“ without a number."
+  },
+  "content.current": {
+   "verdict": "pass",
+   "evidence": "Nothing dated on the page itself."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "Short sentences and a table."
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No errors found."
+  },
+  "content.duplicate": {
+   "verdict": "pass",
+   "evidence": "Unique content."
+  },
+  "structure.scannable": {
+   "verdict": "pass",
+   "evidence": "One table, two paragraphs."
+  },
+  "action.primary": {
+   "verdict": "warn",
+   "evidence": "No next step: no link back to shopping or to returns."
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "Seven green tabs (Home … Sale!) plus a second department list in the sidebar; the current tab is marked yellow, but Delivery, Returns and Contact live only in the footer.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The green house-and-leaf logo with the italic Millbrook wordmark, dark green #2f5420 / #4c7f2f and cream surfaces: recognisable on every page and fitting for a home and garden shop. Verdana 11 px is just old, not brand.",
+   "selector": "tr.header a > img"
+  },
+  "visual.images": {
+   "verdict": "n/a",
+   "evidence": "No images in the content."
+  },
+  "visual.hierarchy": {
+   "verdict": "pass",
+   "evidence": "The table is the first thing in the content."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, nav, sidebar boxes and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "warn",
+   "evidence": "The footer names the shop and its street address; there are no reviews, no returns promise near the products and the payment logos are plain text boxes."
+  }
+ },
+ "inventory": [
+  {
+   "block": "Intro",
+   "selector": "td.main > p:nth-of-type(1)",
+   "action": "keep",
+   "why": "Clear."
+  },
+  {
+   "block": "Delivery table",
+   "selector": "table.spec",
+   "action": "rewrite",
+   "why": "Cards or a list that fit phones."
+  },
+  {
+   "block": "Notes on abroad and couriers",
+   "selector": "td.main > p:nth-of-type(2)",
+   "action": "keep",
+   "why": "Useful facts."
+  }
+ ],
+ "keep": [
+  "The four delivery options with prices and times",
+  "No delivery abroad",
+  "Courier for large items"
+ ],
+ "fix": [
+  {
+   "text": "Table unreadable on phones",
+   "severity": "high",
+   "check": "mobile.viewport"
+  },
+  {
+   "text": "No link to returns",
+   "severity": "medium",
+   "check": "content.complete"
+  }
+ ],
+ "add": [
+  "Link to returns",
+  "Phone number for islands"
+ ],
+ "design_input": [
+  "Delivery options as a list of cards: name, time, price",
+  "Free delivery over €50 highlighted",
+  "Links to returns and contact"
+ ]
+}

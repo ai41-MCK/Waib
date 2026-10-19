@@ -1,0 +1,161 @@
+{
+ "summary": "The product page has to sell a €50 voucher as a gift. Price, stock, the other values and what the voucher is (12 months, online and in store, sent by post) are all there. But the values €10 and €25 are links to other pages, the specifications list „Colour: €50“, and there is no way to add a message or send it by email. Most important: one voucher page with the value as a choice and a gift message.",
+ "audience": "People looking for a gift, often not sure what the recipient wants.",
+ "tasks": [
+  "Choose a value",
+  "Add it to the basket",
+  "Know how and when it arrives"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "Picture of the voucher, its name and „€50.00“ in the first screen.",
+   "selector": "span.price.big"
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "Values are separate pages („Also available in: €10 | €25“); no gift message field.",
+   "selector": "td.main p:nth-of-type(5)"
+  },
+  "content.complete": {
+   "verdict": "warn",
+   "evidence": "How long postage takes is unclear (“dispatched within 2-3 working days” vs. “first class post”); nothing on how to redeem it or check its balance."
+  },
+  "content.current": {
+   "verdict": "pass",
+   "evidence": "Price and stock look current."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "A two-sentence description and three short points."
+  },
+  "content.errors": {
+   "verdict": "warn",
+   "evidence": "The specifications list the value as „Colour: €50“: a template field that doesn't fit.",
+   "selector": "table.spec"
+  },
+  "content.duplicate": {
+   "verdict": "warn",
+   "evidence": "The €10 and €25 pages repeat this page with another value."
+  },
+  "structure.scannable": {
+   "verdict": "pass",
+   "evidence": "Buy box, description, specifications, reviews, related gifts."
+  },
+  "action.primary": {
+   "verdict": "pass",
+   "evidence": "„Add to basket“ is the one orange button next to the price.",
+   "selector": "input.btn-buy"
+  },
+  "nav.menu": {
+   "verdict": "pass",
+   "evidence": "The Gifts tab and the sidebar's Gifts entry are marked as current.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The voucher shows the Millbrook wordmark on the shop's colours."
+  },
+  "visual.images": {
+   "verdict": "warn",
+   "evidence": "One small picture; „Click here to enlarge“ opens the bare file. The related products have no alt text.",
+   "selector": "img.pimg"
+  },
+  "visual.hierarchy": {
+   "verdict": "pass",
+   "evidence": "Price and the orange button stand out next to the picture."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same product layout as the kettle page."
+  },
+  "trust.signals": {
+   "verdict": "warn",
+   "evidence": "„Valid for 12 months“ is clear; there are no reviews and no terms for vouchers.",
+   "selector": "p.stock"
+  }
+ },
+ "inventory": [
+  {
+   "block": "Voucher picture",
+   "selector": "img.pimg",
+   "action": "keep",
+   "why": "Shows what arrives; larger, without the enlarge link."
+  },
+  {
+   "block": "Buy box",
+   "selector": "span.price.big",
+   "action": "rewrite",
+   "why": "Value as a choice (€10, €25, €50), quantity, gift message, Add to basket."
+  },
+  {
+   "block": "Other values",
+   "selector": "td.main p:nth-of-type(5)",
+   "action": "merge",
+   "why": "Into the buy box's value choice."
+  },
+  {
+   "block": "Description and points",
+   "action": "keep",
+   "why": "Says what the voucher is."
+  },
+  {
+   "block": "Specifications",
+   "selector": "table.spec",
+   "action": "drop",
+   "why": "„Colour: €50“ says nothing; the code can sit in the buy box."
+  },
+  {
+   "block": "Empty reviews",
+   "action": "drop",
+   "why": "Nothing to show."
+  },
+  {
+   "block": "Customers also bought",
+   "selector": "table.grid",
+   "action": "keep",
+   "why": "Good gift ideas next to the voucher."
+  }
+ ],
+ "keep": [
+  "Values €10, €25 and €50",
+  "Valid 12 months, online and in store, free first class postage",
+  "Related gifts"
+ ],
+ "fix": [
+  {
+   "text": "Each value is a separate page",
+   "severity": "high",
+   "check": "purpose.tasks",
+   "selector": "td.main p:nth-of-type(5)"
+  },
+  {
+   "text": "Tiny button and text on phones",
+   "severity": "high",
+   "check": "mobile.tap",
+   "selector": "input.btn-buy"
+  },
+  {
+   "text": "„Colour: €50“ in the specifications",
+   "severity": "low",
+   "check": "content.errors",
+   "selector": "table.spec"
+  },
+  {
+   "text": "Delivery time of the card unclear",
+   "severity": "low",
+   "check": "content.complete"
+  }
+ ],
+ "add": [
+  "Gift message",
+  "How to redeem and check the balance",
+  "Voucher terms link"
+ ],
+ "design_input": [
+  "Picture and buy box side by side on desktop, picture first on phones",
+  "Buy box: value choice, quantity, gift message, Add to basket, delivery line",
+  "What the voucher is: three short points",
+  "Related gifts row"
+ ]
+}

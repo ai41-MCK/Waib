@@ -1,0 +1,162 @@
+{
+ "summary": "The product page has to make someone buy the Enamel Stove-Top Kettle. It has the essentials: picture, price, stock, delivery cost, description and specifications. But the 280 px picture can't be zoomed, there are no reviews, the colour choice is a sentence of links, and on a phone the „Add to basket“ button is tiny. Most important: a buy box that works on phones, with colours as swatches.",
+ "audience": "Visitors deciding whether to buy this kettle, usually coming from the Kitchen page or search.",
+ "tasks": [
+  "Check the price, colour and size",
+  "Add it to the basket",
+  "Check delivery and returns"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "Picture, name and price „€34.99“ sit side by side in the first screen.",
+   "selector": "span.price.big"
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "Adding to the basket works, but the colours are links to other pages („Also available in: Cream | Red“) and returns aren't mentioned."
+  },
+  "content.complete": {
+   "verdict": "warn",
+   "evidence": "Missing: returns policy, care for enamel, how many cups 2.5 litres is; there are no reviews („There are no reviews for this product yet“).",
+   "selector": "td.main > h2:nth-of-type(3)"
+  },
+  "content.current": {
+   "verdict": "pass",
+   "evidence": "Price and stock look current."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "Description of two sentences and a four-point feature list."
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No errors found."
+  },
+  "content.duplicate": {
+   "verdict": "warn",
+   "evidence": "The description is word for word the same on the Cream and Red pages."
+  },
+  "structure.scannable": {
+   "verdict": "pass",
+   "evidence": "Clear order: buy box, description, specifications, reviews, related products."
+  },
+  "action.primary": {
+   "verdict": "pass",
+   "evidence": "„Add to basket“ is the one orange button next to the price.",
+   "selector": "input.btn-buy"
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "Seven green tabs (Home … Sale!) plus a second department list in the sidebar; the current tab is marked yellow, but Delivery, Returns and Contact live only in the footer.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The green house-and-leaf logo with the italic Millbrook wordmark, dark green #2f5420 / #4c7f2f and cream surfaces: recognisable on every page and fitting for a home and garden shop. Verdana 11 px is just old, not brand.",
+   "selector": "tr.header a > img"
+  },
+  "visual.images": {
+   "verdict": "warn",
+   "evidence": "One picture only, 280 px, with „Click here to enlarge“ opening the bare file; no other angles.",
+   "selector": "img.pimg"
+  },
+  "visual.hierarchy": {
+   "verdict": "pass",
+   "evidence": "Price and the orange button stand out next to the picture."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, nav, sidebar boxes and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "warn",
+   "evidence": "„In stock - usually dispatched within 2-3 working days“ helps; The footer names the shop and its street address; there are no reviews, no returns promise near the products and the payment logos are plain text boxes.",
+   "selector": "p.stock"
+  }
+ },
+ "inventory": [
+  {
+   "block": "Product picture",
+   "selector": "img.pimg",
+   "action": "rewrite",
+   "why": "Large picture that zooms, room for more angles."
+  },
+  {
+   "block": "Buy box: name, code, price, stock, quantity, button",
+   "selector": "td.buy",
+   "action": "keep",
+   "why": "All the right facts; make it phone-friendly."
+  },
+  {
+   "block": "Colour links",
+   "selector": "td.buy > p:nth-of-type(4)",
+   "action": "rewrite",
+   "why": "Colour swatches."
+  },
+  {
+   "block": "Description and features",
+   "selector": "td.main > h2:nth-of-type(1)",
+   "action": "keep",
+   "why": "Concrete and short."
+  },
+  {
+   "block": "Specifications",
+   "selector": "table.spec",
+   "action": "keep",
+   "why": "Useful facts."
+  },
+  {
+   "block": "Reviews",
+   "selector": "td.main > h2:nth-of-type(3)",
+   "action": "rewrite",
+   "why": "Show reviews once there are some; hide the empty section."
+  },
+  {
+   "block": "Customers also bought",
+   "selector": "td.main > h2:nth-of-type(4)",
+   "action": "keep",
+   "why": "Leads to more products."
+  }
+ ],
+ "keep": [
+  "Name, price, product code, stock line",
+  "Description, features and specifications",
+  "Delivery cost line"
+ ],
+ "fix": [
+  {
+   "text": "Tiny button and text on phones",
+   "severity": "high",
+   "check": "mobile.tap",
+   "selector": "input.btn-buy"
+  },
+  {
+   "text": "Colours are links to other pages",
+   "severity": "medium",
+   "check": "purpose.tasks"
+  },
+  {
+   "text": "Returns not mentioned next to the button",
+   "severity": "medium",
+   "check": "content.complete"
+  },
+  {
+   "text": "Small picture without zoom",
+   "severity": "low",
+   "check": "visual.images",
+   "selector": "img.pimg"
+  }
+ ],
+ "add": [
+  "Colour swatches",
+  "30-day returns next to the button",
+  "Larger picture with zoom"
+ ],
+ "design_input": [
+  "Picture first on phones, buy box beside it on desktop",
+  "Buy box: name, price, colour swatches, quantity, Add to basket, stock and delivery",
+  "Description, features, specifications as short sections",
+  "Related products row"
+ ]
+}

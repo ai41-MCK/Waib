@@ -1,0 +1,143 @@
+{
+ "summary": "The Kitchen page lists the 16 kitchen products. The list is complete and every product has a picture and a price, but the page opens with a 242 px shelf picture and an intro before the first product, the sort menu does nothing without scripts, and on a phone the three-column table shrinks to unreadable size. Most important: a product grid that starts in the first screen and works on phones.",
+ "audience": "Visitors looking for kitchenware, comparing products and prices.",
+ "tasks": [
+  "Browse the kitchen products",
+  "Compare prices and colours",
+  "Open a product"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "Breadcrumb, the shelf picture and the heading „Kitchen“ make the page clear at once."
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "All 16 products can be opened, but sorting („Sort by: Most popular“) has no effect and there are no filters by colour or price.",
+   "selector": "table.sortbar"
+  },
+  "content.complete": {
+   "verdict": "pass",
+   "evidence": "Name, colour, price and a picture for every product."
+  },
+  "content.current": {
+   "verdict": "warn",
+   "evidence": "Product data looks current, but the sidebar news and the footer are from 2011."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "Short intro of two sentences.",
+   "selector": "td.main > p:nth-of-type(1)"
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No errors found."
+  },
+  "content.duplicate": {
+   "verdict": "warn",
+   "evidence": "Colour versions are separate products: „Enamel Stove-Top Kettle (Cream)“, „(Sage)“ and „(Red)“ fill three of 16 cards with the same item.",
+   "selector": "table.grid"
+  },
+  "structure.scannable": {
+   "verdict": "warn",
+   "evidence": "A long table of 16 cards with no grouping; the first products start below the picture and intro."
+  },
+  "action.primary": {
+   "verdict": "pass",
+   "evidence": "Opening a product is the clear action; each card links name and picture."
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "Seven green tabs (Home … Sale!) plus a second department list in the sidebar; the current tab is marked yellow, but Delivery, Returns and Contact live only in the footer.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The green house-and-leaf logo with the italic Millbrook wordmark, dark green #2f5420 / #4c7f2f and cream surfaces: recognisable on every page and fitting for a home and garden shop. Verdana 11 px is just old, not brand.",
+   "selector": "tr.header a > img"
+  },
+  "visual.images": {
+   "verdict": "pass",
+   "evidence": "The shelf picture and the product photos are sharp and on topic.",
+   "selector": "img[src*=\"kitchen-shelf\"]"
+  },
+  "visual.hierarchy": {
+   "verdict": "warn",
+   "evidence": "Red prices, „NEW!“ badges and grey „Buy“ buttons are louder than the product names."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, nav, sidebar boxes and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "warn",
+   "evidence": "The footer names the shop and its street address; there are no reviews, no returns promise near the products and the payment logos are plain text boxes."
+  }
+ },
+ "inventory": [
+  {
+   "block": "Breadcrumb",
+   "selector": "div.crumb",
+   "action": "keep",
+   "why": "Helps on deep pages."
+  },
+  {
+   "block": "Shelf picture",
+   "selector": "img[src*=\"kitchen-shelf\"]",
+   "action": "rewrite",
+   "why": "A slim category header with the picture, so products start sooner."
+  },
+  {
+   "block": "Intro text",
+   "selector": "td.main > p:nth-of-type(1)",
+   "action": "keep",
+   "why": "Short and useful."
+  },
+  {
+   "block": "Count and sort bar",
+   "selector": "table.sortbar",
+   "action": "rewrite",
+   "why": "Sorting and colour filter that work."
+  },
+  {
+   "block": "Product grid",
+   "selector": "table.grid",
+   "action": "rewrite",
+   "why": "One card per product with colour swatches instead of one card per colour."
+  }
+ ],
+ "keep": [
+  "All 16 products with names and prices",
+  "The intro text",
+  "The shelf picture"
+ ],
+ "fix": [
+  {
+   "text": "No viewport: the grid shrinks to unreadable size on phones",
+   "severity": "high",
+   "check": "mobile.viewport"
+  },
+  {
+   "text": "Sort menu has no effect",
+   "severity": "medium",
+   "check": "purpose.tasks",
+   "selector": "table.sortbar"
+  },
+  {
+   "text": "Colour versions repeat the same product",
+   "severity": "medium",
+   "check": "content.duplicate",
+   "selector": "table.grid"
+  }
+ ],
+ "add": [
+  "Colour swatches on the cards",
+  "Filter by price and colour"
+ ],
+ "design_input": [
+  "Slim category header with picture and intro",
+  "Sort and filter bar",
+  "Product grid: 2 columns on phones, 4 on desktop, one card per product with colour swatches",
+  "The trust strip from the home page"
+ ]
+}

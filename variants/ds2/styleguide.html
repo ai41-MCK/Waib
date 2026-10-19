@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brook Street: style guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font: var(--text-base)/var(--leading-normal) var(--font-body); color: var(--color-text); background: var(--color-bg); }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: var(--space-2xl) var(--container-pad); display: grid; gap: var(--space-2xl); }
+  .display { font: var(--weight-bold) var(--text-3xl)/var(--leading-tight) var(--font-display); letter-spacing: -.04em; }
+  .display em { font-style: normal; color: var(--color-accent); }
+  .mono { font: var(--weight-medium) var(--text-xs) var(--font-display); letter-spacing: .14em; text-transform: uppercase; }
+  section > h2 { font: var(--weight-bold) var(--text-xl)/1 var(--font-display); letter-spacing: -.02em; border-bottom: 1px solid var(--color-primary); padding-bottom: var(--space-sm); margin-bottom: var(--space-lg); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .sw i { display: block; height: 96px; border: 1px solid var(--color-border); }
+  .sw b { display: block; font-size: var(--text-sm); margin-top: 6px; }
+  .sw code { font-size: var(--text-xs); color: var(--color-text-muted); }
+  .type > div { display: grid; grid-template-columns: 120px 1fr; align-items: baseline; gap: var(--space-lg); padding: var(--space-sm) 0; border-bottom: 1px solid var(--color-border); }
+  .type small { color: var(--color-text-muted); font-size: var(--text-xs); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-lg); align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 26px; background: var(--color-primary); color: #fff; font: var(--weight-semibold) var(--text-base) var(--font-display); text-decoration: none; }
+  .btn.accent { background: var(--color-accent); }
+  .link { font-weight: var(--weight-semibold); color: var(--color-text); text-underline-offset: 6px; }
+  .add { width: 40px; height: 40px; border: 1px solid var(--color-primary); background: none; font-size: 1.4rem; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+  .tile { aspect-ratio: 4 / 5; overflow: hidden; }
+  .tile img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+  .item .r { display: flex; justify-content: space-between; align-items: start; padding-top: var(--space-sm); gap: var(--space-md); }
+  .item small { display: block; color: var(--color-text-muted); }
+  .item .price { font: var(--weight-bold) var(--text-base) var(--font-display); }
+  .band { background: var(--color-primary); color: #fff; display: flex; justify-content: space-between; padding: var(--space-lg); font: var(--weight-bold) var(--text-2xl)/1 var(--font-display); letter-spacing: -.03em; }
+  .band span:last-child { color: var(--color-accent); }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+  .facts div { border-top: 3px solid var(--color-accent); padding-top: var(--space-md); }
+  .facts b { display: block; font: var(--weight-bold) var(--text-xl)/1.15 var(--font-display); }
+  .facts p { color: var(--color-text-muted); }
+  .index a { display: grid; grid-template-columns: 70px 1fr auto 40px; gap: var(--space-md); padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border); text-decoration: none; color: inherit; }
+  .index strong { font: var(--weight-bold) var(--text-xl)/1.1 var(--font-display); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><p class="mono">Design system · Brook Street</p><h1 class="display" style="font-size:var(--text-4xl);margin-top:var(--space-md)">Millbrook<em>.</em></h1>
+    <p style="max-width:56ch;margin-top:var(--space-md);color:var(--color-text-muted)">A new look for the shop: black and white with one warm tomato accent, a confident grotesk, square edges, and every product on its own soft colour tile.</p></header>
+
+  <section><h2>Colours</h2><div class="swatches">
+    <div class="sw"><i style="background:var(--color-primary)"></i><b>Ink</b><code data-token="--color-primary"></code></div>
+    <div class="sw"><i style="background:var(--color-accent)"></i><b>Tomato</b><code data-token="--color-accent"></code></div>
+    <div class="sw"><i style="background:var(--color-bg)"></i><b>Paper</b><code data-token="--color-bg"></code></div>
+    <div class="sw"><i style="background:var(--color-bg-alt)"></i><b>Paper alt</b><code data-token="--color-bg-alt"></code></div>
+    <div class="sw"><i style="background:var(--color-text-muted)"></i><b>Text muted</b><code data-token="--color-text-muted"></code></div>
+    <div class="sw"><i style="background:var(--tile-sage)"></i><b>Tile sage</b><code data-token="--tile-sage"></code></div>
+    <div class="sw"><i style="background:var(--tile-sky)"></i><b>Tile sky</b><code data-token="--tile-sky"></code></div>
+    <div class="sw"><i style="background:var(--tile-peach)"></i><b>Tile peach</b><code data-token="--tile-peach"></code></div>
+    <div class="sw"><i style="background:var(--tile-butter)"></i><b>Tile butter</b><code data-token="--tile-butter"></code></div>
+    <div class="sw"><i style="background:var(--tile-blush)"></i><b>Tile blush</b><code data-token="--tile-blush"></code></div>
+  </div></section>
+
+  <section><h2>Type</h2><div class="type">
+    <div><small>4xl · Space Grotesk</small><p class="display" style="font-size:var(--text-4xl)">Good things<em>.</em></p></div>
+    <div><small>2xl · Space Grotesk</small><p style="font:700 var(--text-2xl)/1 var(--font-display);letter-spacing:-.03em">New this month</p></div>
+    <div><small>lg · Inter</small><p style="font-size:var(--text-lg);color:var(--color-text-muted)">Kettles, lamps, linen, pots and tools, many made by small local makers.</p></div>
+    <div><small>base · Inter</small><p>Hand poured soy wax candle in a reusable glass jar. Approx. 40 hours burn time.</p></div>
+    <div><small>label</small><p class="mono">A family shop since 1987</p></div>
+  </div></section>
+
+  <section><h2>Buttons and links</h2><div class="row"><a class="btn" href="#">Shop new in →</a><a class="btn accent" href="#">How to find us →</a><a class="link" href="#">Visit the shop</a><button class="add" aria-label="Add to basket">+</button></div></section>
+
+  <section><h2>Product tile</h2><div class="grid">
+    <div class="item"><div class="tile" style="background:var(--tile-sage)"><img src="../../assets/enamel-stove-top-kettle-sage.jpg" alt=""></div><div class="r"><div><b>Enamel Stove-Top Kettle</b><small>Sage · 3 colours</small></div><span class="price">€34.99</span><button class="add" aria-label="Add to basket">+</button></div></div>
+    <div class="item"><div class="tile" style="background:var(--tile-sky)"><img src="../../assets/stoneware-teapot-1-2l-navy.jpg" alt=""></div><div class="r"><div><b>Stoneware Teapot 1.2L</b><small>Navy · 2 colours</small></div><span class="price">€24.99</span><button class="add" aria-label="Add to basket">+</button></div></div>
+    <div class="item"><div class="tile" style="background:var(--tile-butter)"><img src="../../assets/brass-table-lamp-cream.jpg" alt=""></div><div class="r"><div><b>Brass Table Lamp</b><small>Cream · 3 colours</small></div><span class="price">€59.00</span><button class="add" aria-label="Add to basket">+</button></div></div>
+  </div></section>
+
+  <section><h2>Department band and index</h2><div class="band"><span>Kitchen</span><span>Home &amp; Living</span><span>Lighting</span><span>Garden</span><span>Gifts</span></div>
+    <div class="index" style="margin-top:var(--space-lg)"><a href="#"><span class="mono">01</span><strong>Kitchen</strong><span>16 products</span><span>→</span></a><a href="#"><span class="mono">02</span><strong>Home &amp; Living</strong><span>16 products</span><span>→</span></a></div></section>
+
+  <section><h2>Promises</h2><div class="facts"><div><b>Free delivery over €50</b><p>Otherwise €4.95.</p></div><div><b>30-day returns</b><p>Refund or exchange.</p></div><div><b>A real shop</b><p>Brook Street, Millbrook.</p></div></div></section>
+</div>
+<script>
+  for (const c of document.querySelectorAll('[data-token]')) c.textContent = c.dataset.token + ' ' + getComputedStyle(document.documentElement).getPropertyValue(c.dataset.token).trim();
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{
+ "based_on": [
+  "index",
+  "kitchen",
+  "kitchen-enamel-stove-top-kettle-sage",
+  "delivery",
+  "contact",
+  "about-us"
+ ],
+ "verdict": "Six pages, one template from around 2009: a fixed table layout without a viewport, so every page is shrunk to 40 % on a phone with text at about 4 px, while the notes say most customers order on their phones. Content and prices are complete and concrete, but the home page still advertises the 2011 Spring Sale and news from 2011. Phone and email are never tap-to-call. The brand (green house logo, dark green and cream) is consistent and worth keeping; the loud mix of red, yellow and orange around it is not.",
+ "recommend": "refresh",
+ "why": "visual.brand passes on all six pages and they look like one site, so not a redesign by the rule; mobile (viewport, tap targets, font) and technical checks fail on every page. That is a refresh: keep logo and colours, rebuild layout, type and components phone-first.",
+ "brand": [
+  {
+   "element": "logo",
+   "value": "Green rounded square with a house and leaf, italic „Millbrook“, „HOME & GARDEN“",
+   "action": "keep",
+   "why": "Recognisable and fitting; only a 270 px PNG, so redraw it as SVG."
+  },
+  {
+   "element": "color",
+   "value": "#2f5420",
+   "action": "keep",
+   "why": "The dark brand green of top bar, logo and headings."
+  },
+  {
+   "element": "color",
+   "value": "#4c7f2f",
+   "action": "refine",
+   "why": "The tab green: good as a button colour, needs a darker hover."
+  },
+  {
+   "element": "color",
+   "value": "#f1efe1",
+   "action": "keep",
+   "why": "The cream surface of the sidebar: warm, fits home and garden."
+  },
+  {
+   "element": "color",
+   "value": "#cc0000 / #ff9c00 / #fff6b3",
+   "action": "replace",
+   "why": "Sale red, button orange and ticker yellow shout against each other; one accent is enough."
+  },
+  {
+   "element": "font",
+   "value": "Verdana 11 px, Georgia for headings",
+   "action": "refine",
+   "why": "Keep a serif for headings (it carries the traditional feel), a readable sans at 16 px for text."
+  },
+  {
+   "element": "imagery",
+   "value": "Product photos on light grey, the shopfront",
+   "action": "keep",
+   "why": "Clean, consistent and real."
+  }
+ ],
+ "brief": {
+  "goals": [
+   "Sell on phones: products, prices and the basket easy to use with one thumb",
+   "Show one current offer instead of the 2011 sale",
+   "Make the family shop and its service visible: free delivery over €50, 30-day returns, a real shop since 1987"
+  ],
+  "audience": "Regular customers from the area and new visitors from search, mostly on phones.",
+  "tone": "Warm, practical, a little traditional: a family shop, not a chain.",
+  "components": [
+   "Header with logo, search and basket",
+   "Department menu",
+   "Hero with one offer",
+   "Department tiles",
+   "Product card with colour swatches",
+   "Product grid with sort and filter",
+   "Buy box",
+   "Trust strip",
+   "Visit the shop block",
+   "Contact cards",
+   "Footer with service links and newsletter"
+  ],
+  "priorities": [
+   "Departments and products",
+   "Price, delivery and returns",
+   "Contact and the shop"
+  ],
+  "constraints": [
+   "WCAG AA contrast",
+   "Prices and product data exactly as on the site",
+   "Phone 01632 960 412 and the address kept verbatim"
+  ]
+ }
+}

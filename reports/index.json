@@ -1,0 +1,205 @@
+{
+ "summary": "The home page is the shop window: it should show what Millbrook sells, today's offers and the way into the departments. It does all of that, but as a 2011 page crammed into a 780 px table: on a phone it is shrunk to 40 %, the offer banner and ticker are from the 2011 Spring Sale, and nothing says why to buy here. The change that matters most: a phone-first page that leads with the departments and one current offer.",
+ "audience": "Regular customers from the area and new visitors arriving from search, mostly on their phones (the notes say most orders are placed on phones).",
+ "tasks": [
+  "Find the right department or product",
+  "See current offers and new arrivals",
+  "Check delivery costs and opening hours of the shop"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "warn",
+   "evidence": "The logo says Home & Garden, but the first screen is mostly the sale banner and the sidebar; the welcome text explaining the shop starts below the banner.",
+   "selector": "td.main > a"
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "Departments and products are reachable, but on a phone every link is tiny (the page is shrunk to 40 %) and the basket only opens a pop-up („javascript:popup('basket')“)."
+  },
+  "content.complete": {
+   "verdict": "pass",
+   "evidence": "Departments, new products with prices, bestsellers, delivery promise („FREE … on orders over €50“), shop address and opening hours."
+  },
+  "content.current": {
+   "verdict": "fail",
+   "evidence": "Banner and ticker advertise the Spring Sale that „ends 30th April 2011“; the newest news item is from 12/03/2011 and the footer says „© 2003-2011“.",
+   "selector": "marquee"
+  },
+  "content.readable": {
+   "verdict": "warn",
+   "evidence": "The welcome paragraph has 71 words of general phrases („Now you can buy our products online 24 hours a day, 7 days a week!!“) before anything useful.",
+   "selector": "td.main > p:nth-of-type(1)"
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No spelling errors; a double exclamation mark in the welcome text."
+  },
+  "content.duplicate": {
+   "verdict": "warn",
+   "evidence": "The sidebar (departments, special offer, newsletter, news, cards) repeats on every page and takes a third of the width.",
+   "selector": "td.side"
+  },
+  "structure.scannable": {
+   "verdict": "warn",
+   "evidence": "Section bars (New This Month, Our Bestsellers, Visit Our Shop) help, but the sidebar boxes compete with them and the page has 59 links."
+  },
+  "action.primary": {
+   "verdict": "warn",
+   "evidence": "Six „Buy“ buttons, „Shop now »“ in the banner, „Subscribe“ and „GO“: no single main action, and the grid's „Buy“ buttons do nothing.",
+   "selector": "table.grid"
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "Seven green tabs (Home … Sale!) plus a second department list in the sidebar; the current tab is marked yellow, but Delivery, Returns and Contact live only in the footer.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The green house-and-leaf logo with the italic Millbrook wordmark, dark green #2f5420 / #4c7f2f and cream surfaces: recognisable on every page and fitting for a home and garden shop. Verdana 11 px is just old, not brand.",
+   "selector": "tr.header a > img"
+  },
+  "visual.images": {
+   "verdict": "warn",
+   "evidence": "The product pictures are clean 600 px photos shown at 110 px; the sale banner is a 2.5 MB, 5800 px wide file shown at 580 px, with its text baked into the image.",
+   "selector": "td.main > a"
+  },
+  "visual.hierarchy": {
+   "verdict": "fail",
+   "evidence": "Red sale box, yellow ticker, green bars, red prices and orange buttons all shout at once; the eye lands on the banner, then the dashed red „Special Offer!“ box, not on the products.",
+   "selector": "div.box.offer"
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, nav, sidebar boxes and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "warn",
+   "evidence": "„family run business … since 1987“ and the shop photo build trust; The footer names the shop and its street address; there are no reviews, no returns promise near the products and the payment logos are plain text boxes.",
+   "selector": "td.visit"
+  }
+ },
+ "inventory": [
+  {
+   "block": "Top bar: free delivery and order hotline",
+   "selector": "td.topbar",
+   "action": "keep",
+   "why": "The two facts visitors look for; the hotline needs to be a tap-to-call link."
+  },
+  {
+   "block": "Header: logo, log in, basket, search",
+   "selector": "tr.header",
+   "action": "rewrite",
+   "why": "Keep logo, basket and search; make them a compact, sticky header that works on phones."
+  },
+  {
+   "block": "Department tabs",
+   "selector": "table.nav",
+   "action": "rewrite",
+   "why": "Keep the six departments, as a menu that fits phones."
+  },
+  {
+   "block": "Scrolling ticker",
+   "selector": "marquee",
+   "action": "drop",
+   "why": "Out of date and hard to read; one current offer goes in the hero."
+  },
+  {
+   "block": "Sidebar boxes",
+   "selector": "td.side",
+   "action": "merge",
+   "why": "Departments into the menu, newsletter into the footer, news and cards dropped from the home page."
+  },
+  {
+   "block": "Spring Sale banner",
+   "selector": "td.main > a",
+   "action": "rewrite",
+   "why": "A real-text hero with one current offer instead of a 2011 image banner."
+  },
+  {
+   "block": "Welcome text",
+   "selector": "td.main > p:nth-of-type(1)",
+   "action": "rewrite",
+   "why": "One sentence about the family shop since 1987."
+  },
+  {
+   "block": "Shop tour video",
+   "action": "keep",
+   "why": "A real look inside the shop; give it a proper place next to the shop's address, not between welcome text and products."
+  },
+  {
+   "block": "New This Month grid",
+   "selector": "table.grid",
+   "action": "keep",
+   "why": "The heart of the page: product cards with price and a working add-to-basket."
+  },
+  {
+   "block": "Bestsellers list",
+   "selector": "table.best",
+   "action": "merge",
+   "why": "Merge with the new products into one product row."
+  },
+  {
+   "block": "Visit Our Shop",
+   "selector": "td.visit",
+   "action": "keep",
+   "why": "Address, opening hours and parking matter for local customers."
+  },
+  {
+   "block": "Footer with counter and „Best viewed with“",
+   "selector": "td.footer",
+   "action": "rewrite",
+   "why": "Keep the links; drop the counter and browser notice."
+  }
+ ],
+ "keep": [
+  "Logo, dark green and cream",
+  "Free delivery over €50 and the order hotline 01632 960 412",
+  "The six departments",
+  "Shop address, opening hours and free parking",
+  "„family run … since 1987“"
+ ],
+ "fix": [
+  {
+   "text": "No viewport: phones show the page shrunk to 40 % with 4 px text",
+   "severity": "high",
+   "check": "mobile.viewport"
+  },
+  {
+   "text": "Sale banner, ticker and news from 2011",
+   "severity": "high",
+   "check": "content.current",
+   "selector": "marquee"
+  },
+  {
+   "text": "Everything competes for attention; nothing leads",
+   "severity": "medium",
+   "check": "visual.hierarchy",
+   "selector": "div.box.offer"
+  },
+  {
+   "text": "Order hotline is not a tap-to-call link",
+   "severity": "medium",
+   "check": "action.contact"
+  },
+  {
+   "text": "Grid „Buy“ buttons do nothing",
+   "severity": "medium",
+   "check": "action.primary",
+   "selector": "table.grid"
+  }
+ ],
+ "add": [
+  "A current offer instead of the 2011 sale",
+  "Reasons to buy here near the products: free delivery, 30-day returns, a real shop",
+  "Tap-to-call hotline and a link to the shop on a map"
+ ],
+ "design_input": [
+  "Compact header: logo, search, basket; departments as a menu that fits phones",
+  "Hero: one current offer with a real-text headline and one button",
+  "Department tiles with pictures",
+  "New in: product cards (picture, name, price, Add to basket)",
+  "Trust strip: free delivery over €50, 30-day returns, family shop since 1987",
+  "Visit the shop: photo, address, opening hours, parking",
+  "Footer: service links, newsletter, contact"
+ ]
+}

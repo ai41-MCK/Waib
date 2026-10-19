@@ -1,0 +1,118 @@
+{
+  "home": "http://www.millbrookhome.example/",
+  "pages": [
+    {
+      "url": "http://www.millbrookhome.example/about-us.html",
+      "title": "About Us - Millbrook Home & Garden",
+      "filename": "about-us.html",
+      "network": {
+        "load_ms": 5,
+        "load_incomplete": false,
+        "requests": 6,
+        "bytes": 70382,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/about-us.html"
+      },
+      "copied": "2026-10-19T10:04:48"
+    },
+    {
+      "url": "http://www.millbrookhome.example/contact.html",
+      "title": "Contact Us - Millbrook Home & Garden",
+      "filename": "contact.html",
+      "network": {
+        "load_ms": 6,
+        "load_incomplete": false,
+        "requests": 5,
+        "bytes": 24650,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/contact.html"
+      },
+      "copied": "2026-10-19T10:04:46"
+    },
+    {
+      "url": "http://www.millbrookhome.example/delivery.html",
+      "title": "Delivery Information - Millbrook Home & Garden",
+      "filename": "delivery.html",
+      "network": {
+        "load_ms": 4,
+        "load_incomplete": false,
+        "requests": 5,
+        "bytes": 24184,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/delivery.html"
+      },
+      "copied": "2026-10-19T10:04:44"
+    },
+    {
+      "url": "http://www.millbrookhome.example/faq.html",
+      "title": "FAQ - Millbrook Home & Garden",
+      "filename": "faq.html",
+      "network": {
+        "load_ms": 18,
+        "load_incomplete": false,
+        "requests": 5,
+        "bytes": 25242,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/faq.html"
+      },
+      "copied": "2026-10-19T13:17:40"
+    },
+    {
+      "url": "http://www.millbrookhome.example/gifts/50-gift-voucher.html",
+      "title": "€50 Gift Voucher - Gifts - Millbrook Home & Garden",
+      "filename": "gifts-50-gift-voucher.html",
+      "network": {
+        "load_ms": 30,
+        "load_incomplete": false,
+        "requests": 10,
+        "bytes": 79939,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/gifts/50-gift-voucher.html"
+      },
+      "copied": "2026-10-19T13:17:42"
+    },
+    {
+      "url": "http://www.millbrookhome.example/",
+      "title": "Millbrook Home & Garden - Homeware, Kitchen & Garden Shop",
+      "filename": "index.html",
+      "network": {
+        "load_ms": 32,
+        "load_incomplete": false,
+        "requests": 18,
+        "bytes": 2700265,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/"
+      },
+      "copied": "2026-10-19T10:49:47"
+    },
+    {
+      "url": "http://www.millbrookhome.example/kitchen/enamel-stove-top-kettle-sage.html",
+      "title": "Enamel Stove-Top Kettle (Sage) - Kitchen - Millbrook Home & Garden",
+      "filename": "kitchen-enamel-stove-top-kettle-sage.html",
+      "network": {
+        "load_ms": 6,
+        "load_incomplete": false,
+        "requests": 10,
+        "bytes": 68396,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/kitchen/enamel-stove-top-kettle-sage.html"
+      },
+      "copied": "2026-10-19T10:04:42"
+    },
+    {
+      "url": "http://www.millbrookhome.example/kitchen/",
+      "title": "Kitchen - Millbrook Home & Garden",
+      "filename": "kitchen.html",
+      "network": {
+        "load_ms": 10,
+        "load_incomplete": false,
+        "requests": 22,
+        "bytes": 207114,
+        "last_modified": "Sat, 12 Mar 2011 08:00:00 GMT",
+        "final_url": "http://www.millbrookhome.example/kitchen/"
+      },
+      "copied": "2026-10-19T10:04:40"
+    }
+  ],
+  "local": true
+}

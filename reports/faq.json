@@ -1,0 +1,135 @@
+{
+ "summary": "The FAQ answers six common questions about delivery, collection, gift wrapping, payment safety and changes to an order, briefly and in plain words. But the questions look like body text, there is no way to jump to one, and returns, which customers ask about most, are missing. Most important: questions grouped by topic as headings, with returns added.",
+ "audience": "Customers with a question before or after ordering, often arriving from the footer link.",
+ "tasks": [
+  "Find the answer to one question quickly",
+  "Check delivery times and costs",
+  "Find out how to change, cancel or return an order"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "The heading „FAQ“ and six questions directly below it, in the first screen.",
+   "selector": "td.main > h1"
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "Delivery, collection and changes are answered; returns and refunds are not, although the footer links a Returns page."
+  },
+  "content.complete": {
+   "verdict": "warn",
+   "evidence": "No answer on returns, delivery costs or opening hours; „Not at the moment, sorry!“ is the whole answer on delivering abroad.",
+   "selector": "td.main > p:nth-of-type(2)"
+  },
+  "content.current": {
+   "verdict": "pass",
+   "evidence": "Nothing dated in the answers themselves."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "Six questions, each answered in one or two short sentences."
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No errors found."
+  },
+  "content.duplicate": {
+   "verdict": "warn",
+   "evidence": "Delivery times repeat the Delivery page; the phone number repeats the top bar."
+  },
+  "structure.scannable": {
+   "verdict": "fail",
+   "evidence": "The questions are bold text inside paragraphs, not headings or a list, and there is no grouping or table of contents.",
+   "selector": "td.main > p:nth-of-type(1)"
+  },
+  "action.primary": {
+   "verdict": "n/a",
+   "evidence": "An information page without one main action."
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "FAQ is only in the footer; the green tabs show no current page here.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "Same logo, greens and cream as the rest of the shop."
+  },
+  "visual.images": {
+   "verdict": "n/a",
+   "evidence": "No images in the content."
+  },
+  "visual.hierarchy": {
+   "verdict": "warn",
+   "evidence": "Questions and answers differ only by bold; the sidebar's red Special Offer draws the eye first."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, sidebar and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "pass",
+   "evidence": "Phone number for changes and a clear answer on payment safety.",
+   "selector": "td.main > p:nth-of-type(6)"
+  }
+ },
+ "inventory": [
+  {
+   "block": "Breadcrumb",
+   "selector": "td.main > div.crumb",
+   "action": "keep",
+   "why": "Shows where the page sits."
+  },
+  {
+   "block": "Heading",
+   "selector": "td.main > h1",
+   "action": "rewrite",
+   "why": "„Help and FAQ“ with a short intro and the phone number."
+  },
+  {
+   "block": "Six questions and answers",
+   "selector": "td.main > p:nth-of-type(1)",
+   "action": "rewrite",
+   "why": "Questions as headings, grouped by Ordering, Delivery, Payment, Returns."
+  }
+ ],
+ "keep": [
+  "All six answers and their facts (2-3 + 3-5 working days, €2.50 gift wrapping, Collect in store)",
+  "Phone number 01632 960 412"
+ ],
+ "fix": [
+  {
+   "text": "Questions are plain bold text: hard to scan, no headings",
+   "severity": "high",
+   "check": "structure.scannable",
+   "selector": "td.main > p:nth-of-type(1)"
+  },
+  {
+   "text": "No answer on returns and refunds",
+   "severity": "medium",
+   "check": "purpose.tasks"
+  },
+  {
+   "text": "Unreadable on phones (no viewport, tiny text)",
+   "severity": "medium",
+   "check": "mobile.viewport"
+  },
+  {
+   "text": "FAQ only reachable from the footer",
+   "severity": "low",
+   "check": "nav.menu"
+  }
+ ],
+ "add": [
+  "Returns and refunds",
+  "Delivery costs and the free-delivery threshold",
+  "Opening hours of the shop",
+  "A contact box at the end"
+ ],
+ "design_input": [
+  "Heading with a one-line intro",
+  "Questions grouped by topic, each as an expandable heading",
+  "Contact box with phone and hours at the end",
+  "Link from the header's help or contact area"
+ ]
+}

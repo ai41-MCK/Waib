@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Millbrook Green: style guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font: var(--text-base)/var(--leading-normal) var(--font-body); color: var(--color-text); background: var(--color-bg); }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: var(--space-2xl) var(--container-pad); display: grid; gap: var(--space-2xl); }
+  h1, h2, h3 { font-family: var(--font-display); color: var(--color-primary-dark); font-weight: var(--weight-semibold); line-height: var(--leading-tight); }
+  .head { display: flex; align-items: center; gap: var(--space-lg); }
+  .head img { width: 72px; height: 72px; }
+  .head h1 { font-size: var(--text-3xl); }
+  .head p { color: var(--color-text-muted); }
+  section > h2 { font-size: var(--text-xl); margin-bottom: var(--space-md); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--color-border); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-md); }
+  .sw { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--text-xs); }
+  .sw i { display: block; height: 72px; }
+  .sw div { padding: var(--space-sm); }
+  .sw b { display: block; font-size: var(--text-sm); }
+  .sw code { color: var(--color-text-muted); }
+  .type { display: grid; gap: var(--space-sm); }
+  .type div { display: flex; align-items: baseline; gap: var(--space-lg); }
+  .type small { width: 90px; flex-shrink: 0; color: var(--color-text-muted); font-size: var(--text-xs); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; }
+  .btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--space-lg); border-radius: var(--radius-full); border: 2px solid var(--color-primary);
+    font: var(--weight-semibold) var(--text-sm) var(--font-body); text-decoration: none; }
+  .btn-primary { background: var(--color-primary); color: #fff; }
+  .btn-outline { color: var(--color-primary); background: transparent; }
+  .btn-accent { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-primary-dark); }
+  .tag { background: var(--color-accent); color: var(--color-primary-dark); font-size: var(--text-xs); font-weight: var(--weight-bold); padding: 2px 10px; border-radius: var(--radius-full); }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+  .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+  .card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+  .card .b { padding: var(--space-md); display: grid; gap: var(--space-xs); }
+  .card .price { font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-primary-dark); }
+  .dots { display: flex; gap: 6px; } .dots i { width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 0 1px var(--color-border); border: 2px solid #fff; }
+  .note { background: var(--color-primary-dark); color: var(--color-primary-50); font-size: var(--text-xs); padding: var(--space-sm); text-align: center; border-radius: var(--radius-sm); }
+  .trust { background: var(--color-bg-alt); padding: var(--space-lg); border-radius: var(--radius-md); display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); font-size: var(--text-sm); }
+  .trust b { display: block; color: var(--color-primary-dark); }
+  .field { height: 44px; border: 1px solid var(--color-border); border-radius: var(--radius-full); padding: 0 var(--space-md); display: flex; align-items: center; color: var(--color-text-muted); background: #fff; min-width: 280px; }
+  .spacing { display: flex; align-items: flex-end; gap: var(--space-md); }
+  .spacing div { background: var(--color-primary-50); border: 1px solid var(--color-primary-light); }
+  .spacing small { display: block; font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><img src="../../assets/millbrook-logo.svg" alt="Millbrook logo"><div><h1>Millbrook Green</h1><p>The shop's own green and cream, made calm and readable: a refresh of the brand, not a new one.</p></div></div>
+
+  <section><h2>Colours</h2><div class="swatches">
+    <div class="sw"><i style="background:var(--color-primary)"></i><div><b>Primary</b><code data-token="--color-primary"></code></div></div>
+    <div class="sw"><i style="background:var(--color-primary-light)"></i><div><b>Primary light</b><code data-token="--color-primary-light"></code></div></div>
+    <div class="sw"><i style="background:var(--color-primary-dark)"></i><div><b>Primary dark</b><code data-token="--color-primary-dark"></code></div></div>
+    <div class="sw"><i style="background:var(--color-primary-50)"></i><div><b>Primary 50</b><code data-token="--color-primary-50"></code></div></div>
+    <div class="sw"><i style="background:var(--color-secondary)"></i><div><b>Secondary</b><code data-token="--color-secondary"></code></div></div>
+    <div class="sw"><i style="background:var(--color-accent)"></i><div><b>Accent</b><code data-token="--color-accent"></code></div></div>
+    <div class="sw"><i style="background:var(--color-bg)"></i><div><b>Background</b><code data-token="--color-bg"></code></div></div>
+    <div class="sw"><i style="background:var(--color-bg-alt)"></i><div><b>Background alt</b><code data-token="--color-bg-alt"></code></div></div>
+    <div class="sw"><i style="background:var(--color-text)"></i><div><b>Text</b><code data-token="--color-text"></code></div></div>
+    <div class="sw"><i style="background:var(--color-text-muted)"></i><div><b>Text muted</b><code data-token="--color-text-muted"></code></div></div>
+  </div></section>
+
+  <section><h2>Type</h2><div class="type">
+    <div><small>4xl · Fraunces</small><h1 style="font-size:var(--text-4xl)">Good things for your home</h1></div>
+    <div><small>2xl · Fraunces</small><h2 style="font-size:var(--text-2xl)">New this month</h2></div>
+    <div><small>lg · Source Sans</small><p style="font-size:var(--text-lg)">Quality homeware, kitchenware, lighting and garden goods.</p></div>
+    <div><small>base</small><p>This lovely enamel stove-top kettle brings a touch of country charm to any kitchen.</p></div>
+    <div><small>xs · label</small><p style="font-size:var(--text-xs);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-secondary)">Family shop since 1987</p></div>
+  </div></section>
+
+  <section><h2>Buttons, labels, fields</h2><div class="row">
+    <a class="btn btn-primary" href="#">Add to basket</a><a class="btn btn-outline" href="#">Visit our shop</a><a class="btn btn-accent" href="#">How to find us</a>
+    <span class="tag">New</span><span class="field">Search the shop</span>
+  </div></section>
+
+  <section><h2>Product card</h2><div class="grid3">
+    <div class="card"><img src="../../assets/enamel-stove-top-kettle-sage.jpg" alt=""><div class="b"><span class="tag" style="justify-self:start">New</span><b>Enamel Stove-Top Kettle</b><span style="color:var(--color-text-muted);font-size:var(--text-sm)">Sage</span><div class="row" style="justify-content:space-between"><span class="price">€34.99</span><span class="dots"><i style="background:#e9e0c9"></i><i style="background:#8ea886"></i><i style="background:#c0392b"></i></span></div><a class="btn btn-primary" href="#" style="min-height:40px">Add to basket</a></div></div>
+    <div class="card"><img src="../../assets/stoneware-teapot-1-2l-navy.jpg" alt=""><div class="b"><b>Stoneware Teapot 1.2L</b><span style="color:var(--color-text-muted);font-size:var(--text-sm)">Navy</span><span class="price">€24.99</span><a class="btn btn-primary" href="#" style="min-height:40px">Add to basket</a></div></div>
+    <div class="card"><img src="../../assets/linen-cushion-45cm-sage.jpg" alt=""><div class="b"><b>Linen Cushion 45cm</b><span style="color:var(--color-text-muted);font-size:var(--text-sm)">Sage</span><span class="price">€19.99</span><a class="btn btn-primary" href="#" style="min-height:40px">Add to basket</a></div></div>
+  </div></section>
+
+  <section><h2>Announcement and trust strip</h2><div style="display:grid;gap:var(--space-md)">
+    <div class="note">Free delivery on orders over €50 · 30-day returns · Order hotline 01632 960 412</div>
+    <div class="trust"><div><b>Free delivery over €50</b>Otherwise €4.95</div><div><b>30-day returns</b>Full refund or exchange</div><div><b>A real shop since 1987</b>Brook Street, Millbrook</div><div><b>Ask us anything</b>01632 960 412</div></div>
+  </div></section>
+
+  <section><h2>Spacing and radii</h2><div class="spacing">
+    <div><div style="width:var(--space-sm);height:var(--space-sm)"></div><small>sm</small></div><div><div style="width:var(--space-md);height:var(--space-md)"></div><small>md</small></div>
+    <div><div style="width:var(--space-lg);height:var(--space-lg)"></div><small>lg</small></div><div><div style="width:var(--space-xl);height:var(--space-xl)"></div><small>xl</small></div>
+    <div><div style="width:var(--space-2xl);height:var(--space-2xl)"></div><small>2xl</small></div>
+    <div><div style="width:64px;height:64px;border-radius:var(--radius-sm)"></div><small>radius sm</small></div><div><div style="width:64px;height:64px;border-radius:var(--radius-md)"></div><small>radius md</small></div>
+    <div><div style="width:64px;height:64px;border-radius:var(--radius-lg)"></div><small>radius lg</small></div>
+  </div></section>
+</div>
+<script>
+  for (const c of document.querySelectorAll('[data-token]')) c.textContent = c.dataset.token + ' ' + getComputedStyle(document.documentElement).getPropertyValue(c.dataset.token).trim();
+</script>
+</body>
+</html>

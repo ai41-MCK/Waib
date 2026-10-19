@@ -1,0 +1,53 @@
+body { margin: 0; padding: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #333333; background: #d5dcc0; }
+a { color: #1a3f9e; }
+a:hover { color: #cc3300; }
+img { border: 0; }
+.frame { background: #ffffff; border-left: 1px solid #9aa883; border-right: 1px solid #9aa883; }
+.topbar { background: #2f5420; color: #c9d6b6; font-size: 10px; padding: 4px 10px; }
+.topbar b { color: #ffe36e; }
+.header td { vertical-align: middle; }
+.basket { font-size: 10px; text-align: right; padding: 6px 12px; line-height: 18px; }
+.basket .total { color: #cc0000; font-weight: bold; }
+.search { margin: 2px 0 0; }
+input.text { font-family: Verdana; font-size: 11px; border: 1px solid #7f9db9; padding: 2px; }
+.btn { font-family: Verdana; font-size: 10px; font-weight: bold; background: #e9e9e9; border: 2px outset #cccccc; padding: 1px 6px; color: #000; cursor: pointer; }
+.btn-buy { background: #ff9c00; border: 2px outset #ffbf5f; color: #ffffff; }
+.nav { background: #4c7f2f; border-top: 1px solid #6d9a4f; border-bottom: 1px solid #2f5420; }
+.nav td { border-right: 1px solid #7aa35c; text-align: center; }
+.nav a { display: block; padding: 7px 0; color: #ffffff; font-weight: bold; font-size: 11px; text-decoration: none; }
+.nav a:hover, .nav a.on { background: #2f5420; color: #ffe36e; }
+.ticker { background: #fff6b3; border-bottom: 1px solid #e0c95b; color: #993300; font-weight: bold; font-size: 10px; padding: 3px 0; }
+.side { background: #f1efe1; border-right: 1px solid #d8d4b8; vertical-align: top; padding: 8px; }
+.box { border: 1px solid #b8b48f; background: #ffffff; margin-bottom: 10px; }
+.box h3 { margin: 0; background: #4c7f2f; color: #ffffff; font-size: 11px; padding: 4px 6px; }
+.box ul { list-style: none; margin: 0; padding: 4px 6px; }
+.box li { border-bottom: 1px dotted #cccccc; padding: 3px 0; }
+.box a { text-decoration: none; }
+.box a.on { font-weight: bold; color: #cc3300; }
+.box a.sale { color: #cc0000; font-weight: bold; }
+.box .c { padding: 6px; text-align: center; }
+.offer { background: #fff6b3; border: 2px dashed #cc0000; }
+.offer h3 { background: #cc0000; }
+.offer .c { text-align: center; }
+.news .date, .date { color: #999999; font-size: 9px; }
+.cards span { display: inline-block; border: 1px solid #999; background: #f7f7f7; font-size: 9px; font-weight: bold; padding: 1px 3px; margin: 2px; color: #1a3f9e; }
+.secure { font-size: 10px; color: #666666; text-align: center; }
+.main { vertical-align: top; padding: 10px 14px; line-height: 15px; }
+h1 { font-family: Georgia, "Times New Roman", serif; font-size: 20px; color: #2f5420; font-weight: normal; margin: 8px 0 8px; }
+h2.bar { background: #e3ead2; border-left: 4px solid #4c7f2f; font-size: 12px; color: #2f5420; padding: 4px 6px; margin: 14px 0 6px; }
+.price { color: #cc0000; font-weight: bold; font-size: 12px; }
+.price.big { font-size: 20px; }
+.was { text-decoration: line-through; color: #999999; }
+.new { background: #cc0000; color: #ffffff; font-size: 9px; font-weight: bold; padding: 1px 3px; }
+.small, .more { font-size: 9px; color: #777777; }
+.stock { color: #2f8a1f; font-weight: bold; }
+.crumb { font-size: 10px; color: #777777; margin-bottom: 6px; }
+table.grid td.prod { text-align: center; vertical-align: top; padding: 6px; border: 1px solid #e2e2d0; background: #fcfcf7; line-height: 16px; }
+table.grid td.empty { border: 0; background: none; }
+table.best td { border-bottom: 1px dotted #cccccc; vertical-align: middle; }
+table.spec td { border: 1px solid #cccccc; padding: 3px 8px; }
+table.spec td.k { background: #f1efe1; font-weight: bold; }
+.pimg { border: 1px solid #cccccc; padding: 3px; background: #fff; }
+.visit { font-size: 11px; line-height: 15px; }
+.footer { background: #e4e4d8; border-top: 3px solid #4c7f2f; font-size: 10px; color: #777777; padding: 10px; text-align: center; line-height: 15px; }
+.counter { font-family: "Courier New", monospace; background: #000000; color: #33ff33; padding: 1px 4px; }

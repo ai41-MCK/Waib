@@ -1,0 +1,42 @@
+{
+  "design_systems": [
+    {
+      "id": "ds1",
+      "label": "Millbrook Green",
+      "dir": "variants/ds1",
+      "variants": [
+        {
+          "id": "v1",
+          "label": "Classic shop",
+          "dir": "variants/ds1/v1"
+        },
+        {
+          "id": "v1.1",
+          "label": "Shop photo",
+          "dir": "variants/ds1/v1.1"
+        },
+        {
+          "id": "v2",
+          "label": "Departments first",
+          "dir": "variants/ds1/v2"
+        }
+      ]
+    },
+    {
+      "id": "ds2",
+      "label": "Brook Street",
+      "dir": "variants/ds2",
+      "variants": [
+        {
+          "id": "v1",
+          "label": "Editorial",
+          "dir": "variants/ds2/v1"
+        }
+      ]
+    }
+  ],
+  "chosen": {
+    "ds": "ds1",
+    "variant": "v1"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "url": "http://www.millbrookhome.example/",
+  "notes": "We sell online and in our shop. Most customers order on their phone now.",
+  "redesign": [
+    "http://www.millbrookhome.example/",
+    "http://www.millbrookhome.example/kitchen/",
+    "http://www.millbrookhome.example/kitchen/enamel-stove-top-kettle-sage.html",
+    "http://www.millbrookhome.example/delivery.html",
+    "http://www.millbrookhome.example/contact.html",
+    "http://www.millbrookhome.example/about-us.html",
+    "http://www.millbrookhome.example/gifts/50-gift-voucher.html",
+    "http://www.millbrookhome.example/gifts/10-gift-voucher.html",
+    "http://www.millbrookhome.example/gifts/cosy-night-in-set-rust.html",
+    "http://www.millbrookhome.example/faq.html"
+  ],
+  "requested": [
+    "http://www.millbrookhome.example/",
+    "http://www.millbrookhome.example/gifts/50-gift-voucher.html",
+    "http://www.millbrookhome.example/faq.html"
+  ],
+  "started": "2026-10-19T09:57:10"
+}

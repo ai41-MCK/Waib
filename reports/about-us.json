@@ -1,0 +1,125 @@
+{
+ "summary": "The About page tells the story of the family shop and is the best trust content the site has: founded 1987 on Brook Street, run by the family's daughter, products from small local makers. It is plain text beside a small shop picture, and it ends without a next step. Most important: keep the story, give it room and a link to the shop and the products.",
+ "audience": "New customers deciding whether to trust an online shop they don't know.",
+ "tasks": [
+  "Find out who is behind the shop",
+  "Find the shop"
+ ],
+ "checks": {
+  "purpose.clear": {
+   "verdict": "pass",
+   "evidence": "„Millbrook Home & Garden was started in 1987 by Peter and Margaret Hartley…“ in the first lines."
+  },
+  "purpose.tasks": {
+   "verdict": "warn",
+   "evidence": "The story is there, but the page doesn't link to the shop's address or opening hours."
+  },
+  "content.complete": {
+   "verdict": "pass",
+   "evidence": "History, who runs it today, what they stand for."
+  },
+  "content.current": {
+   "verdict": "warn",
+   "evidence": "„in 2009 we launched this new website“."
+  },
+  "content.readable": {
+   "verdict": "pass",
+   "evidence": "Four short paragraphs."
+  },
+  "content.errors": {
+   "verdict": "pass",
+   "evidence": "No errors found."
+  },
+  "content.duplicate": {
+   "verdict": "pass",
+   "evidence": "Unique content."
+  },
+  "structure.scannable": {
+   "verdict": "warn",
+   "evidence": "No subheadings; the values („good quality products, fair prices and friendly service“) are hidden in the second paragraph."
+  },
+  "action.primary": {
+   "verdict": "fail",
+   "evidence": "No link or button at the end of the page."
+  },
+  "nav.menu": {
+   "verdict": "warn",
+   "evidence": "Seven green tabs (Home … Sale!) plus a second department list in the sidebar; the current tab is marked yellow, but Delivery, Returns and Contact live only in the footer.",
+   "selector": "table.nav"
+  },
+  "visual.brand": {
+   "verdict": "pass",
+   "evidence": "The green house-and-leaf logo with the italic Millbrook wordmark, dark green #2f5420 / #4c7f2f and cream surfaces: recognisable on every page and fitting for a home and garden shop. Verdana 11 px is just old, not brand.",
+   "selector": "tr.header a > img"
+  },
+  "visual.images": {
+   "verdict": "pass",
+   "evidence": "The shopfront picture shows the real shop.",
+   "selector": "img.pimg"
+  },
+  "visual.hierarchy": {
+   "verdict": "pass",
+   "evidence": "Heading, picture and text in a clear order."
+  },
+  "visual.consistency": {
+   "verdict": "pass",
+   "evidence": "Same frame, nav, sidebar boxes and footer as the other pages."
+  },
+  "trust.signals": {
+   "verdict": "pass",
+   "evidence": "Family names, founding year, team size and local makers: real reasons to trust."
+  }
+ },
+ "inventory": [
+  {
+   "block": "Shop picture",
+   "selector": "img.pimg",
+   "action": "keep",
+   "why": "The real shop."
+  },
+  {
+   "block": "Story",
+   "selector": "td.main > p:nth-of-type(1)",
+   "action": "keep",
+   "why": "The best trust content."
+  },
+  {
+   "block": "Values",
+   "selector": "td.main > p:nth-of-type(2)",
+   "action": "rewrite",
+   "why": "Three short points."
+  },
+  {
+   "block": "Website history",
+   "selector": "td.main > p:nth-of-type(4)",
+   "action": "drop",
+   "why": "Out of date and not about the customer."
+  }
+ ],
+ "keep": [
+  "Founded 1987 by Peter and Margaret Hartley",
+  "Run by Anne and 12 staff",
+  "Good quality, fair prices, friendly service",
+  "Products from small local makers"
+ ],
+ "fix": [
+  {
+   "text": "No next step",
+   "severity": "medium",
+   "check": "action.primary"
+  },
+  {
+   "text": "Mentions the 2009 website",
+   "severity": "low",
+   "check": "content.current"
+  }
+ ],
+ "add": [
+  "Link to the shop's address and to the departments"
+ ],
+ "design_input": [
+  "Story with the shop picture",
+  "Values as three points",
+  "Visit the shop block with a link"
+ ]
+}
