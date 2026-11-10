@@ -164,6 +164,7 @@
   .item:hover .act, .item:focus-within .act, .act:focus-visible { opacity: 1; }
   .act:hover { background: var(--sheet); color: var(--ink); box-shadow: var(--shadow-lift); }
   .act.star-on { opacity: 1; }
+  .act.del:hover { color: var(--bad); }
   .act.star:hover .i { stroke: var(--star-line); }
   /* blue, like everything that creates */
   .act.split { color: var(--accent-strong); }
@@ -211,6 +212,11 @@
   #stage.annotating::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 2px var(--accent); pointer-events: none; }
   #frame { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: #fff; }
   #layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  /* Preview: the page alone in the window; what it covers can't be reached by Tab either */
+  body.preview #stage { position: fixed; inset: 0; z-index: 25; }
+  body.preview :is(.topbar, #sidebar, .toolbar, #panel, #cover, .bar) { visibility: hidden; }
+  body.preview #layer, body:not(.preview) #exitPreview { display: none; }
+  #exitPreview { position: absolute; right: 16px; bottom: 16px; box-shadow: var(--shadow-lift); }
   #doc { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px 24px; }
   .empty { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 6px; padding: 24px;
            text-align: center; color: var(--ink-2); }
@@ -530,6 +536,8 @@
   <symbol id="i-download" viewBox="0 0 16 16"><path d="M8 2.5v8M5 7.5l3 3 3-3"/><path d="M3 11.5v2h10v-2"/></symbol>
   <symbol id="i-chat" viewBox="0 0 16 16"><path d="M13.5 10a1.5 1.5 0 0 1-1.5 1.5H5.5l-3 2.5V4A1.5 1.5 0 0 1 4 2.5h8A1.5 1.5 0 0 1 13.5 4z"/></symbol>
   <symbol id="i-send" viewBox="0 0 16 16"><path d="M2.5 8l11-5.5-4 11-2-4.5z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.5 4.5h11M6.5 4.5V2.75h3V4.5M4 4.5l.7 8.75h6.6L12 4.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/></symbol>
   <symbol id="i-doc" viewBox="0 0 16 16"><path d="M4 2.5h5.5L12.5 5.5v8H4z"/><path d="M9.5 2.5v3h3M6 8.5h4.5M6 11h4.5"/></symbol>
 </svg>
 
@@ -596,11 +604,12 @@
         </div>
         <button class="btn" id="listBtn" data-for="report"></button>
         <button class="btn claude" id="allBtn" data-for="pages overall"></button>
+        <button class="btn" id="previewBtn" data-for="designs site" title="See this page alone, in the whole window (Esc comes back)"><svg aria-hidden="true" class="i"><use href="#i-eye"/></svg>Preview</button>
         <div class="tools" id="actions">
           <button class="btn claude" id="editBtn" data-mode="edit" data-for="designs">Edit</button>
           <button class="btn claude" data-mode="feedback" data-for="site" title="Ask Claude to change the website's pages directly; point at what to change">Edit</button>
           <span class="divider" data-for="designs site"></span>
-          <button class="btn quiet" id="discardBtn" data-for="designs">Discard</button>
+          <button class="btn quiet" id="discardBtn" data-for="designs"><svg aria-hidden="true" class="i"><use href="#i-trash"/></svg><span>Discard</span></button>
           <button class="btn" id="chooseBtn" data-for="designs"><svg aria-hidden="true" class="i"><use href="#i-star"/></svg><span>Choose for the website</span></button>
           <button class="btn ink" id="exportBtn" data-for="site">Export</button>
         </div>
@@ -609,6 +618,7 @@
     <div class="cover hidden" id="cover"></div>
     <div id="stage">
       <iframe id="frame" title="Page preview"></iframe>
+      <button class="btn ink" id="exitPreview">Exit preview (Esc)</button>
       <div id="layer"></div>
     </div>
     <div id="doc" class="hidden"></div>
@@ -712,6 +722,7 @@
   let S = null;                        // last /api/state
   let dsId = null, vId = null, designPage = null, shown = null, arrived = false, pendingScroll = null;
   let mode = null;                     // open request: edit | variant | ds | feedback | original
+  let previewing = false, pointingWas = false;   // Preview: the page alone in the window
   let requestFor = null;               // the design (and version) an edit or a new variant is about
   let annotating = false, hoverEl = null, hiNote = null, lastView = null, lastHash = null, appPid = null;
   let reportTab = 'report', problems = [];   // the page report's view, and its problems to mark on the original
@@ -1057,6 +1068,7 @@
     const {view: v} = route(), tab = tabOf(v);
     if (lastView && v !== lastView && mode && !(v === 'designs' || v === 'site' && MODES[mode].pointing)) closePanel();   // a new design is asked for in Designs
     lastView = v;
+    if (v !== 'designs' && v !== 'site') setPreview(false, true);
     if (location.hash !== lastHash) { lastHash = location.hash; $('doc').scrollTop = 0; closePageMenu(); }   // a new page opens at its top
     else if (!$('pageMenu').contains(document.activeElement)) closePageMenu();   // an update while it's used keeps it open
     const domain = settings().scratch ? 'New website' : S.discovery.domain ? noWww(S.discovery.domain) : hostOf(yourUrl());   // (a failed lookup: your page's host)
@@ -1089,6 +1101,8 @@
   }
 
   function showArea(which) {          // the canvas shows a page (stage), a document (doc) or a message (empty)
+    $('previewBtn').disabled = which !== 'stage';
+    if (which !== 'stage') setPreview(false, true);
     $('stage').classList.toggle('hidden', which !== 'stage');
     $('doc').classList.toggle('hidden', which !== 'doc');
     $('empty').classList.toggle('hidden', which !== 'empty');
@@ -1923,14 +1937,14 @@
   function designGroup(d) {
     const kids = h('div', {class: 'children'}), group = h('div', {class: 'group'});
     const head = versionRow(upper(d.id), d.label, {strong: true, star: S.chosen && S.chosen.ds === d.id, copy: d.copy,
-      onClick: () => show(d.id, defaultVariant(d)), onCopy: () => duplicate(d, null),
+      onClick: () => show(d.id, defaultVariant(d)), onCopy: () => duplicate(d, null), onDiscard: () => discard(d, null),
       ghostAt: () => [...$('nav').querySelectorAll('.group')].filter(g => g.dataset.ds && before(g.dataset.ds, d.copy)).pop() || group,
       ghostText: 'copy of ' + upper(d.id) + ', all versions'});
     renamable(head, d.label, label => label && act('/api/rename', {ds: d.id, label}), () => d.id === dsId);   // selected: one of its versions is on screen
     group.dataset.ds = d.id;
     kids.append(navItem('Style guide', {id: 'SG', name: upper(d.id) + ' style guide', current: d.id === dsId && vId === SG, onClick: () => show(d.id, SG)}));
     d.variants.forEach(x => kids.append(renamable(versionRow(upper(x.id), x.label, {of: upper(d.id), current: d.id === dsId && x.id === vId,
-      star: isChosen(d.id, x.id), copy: x.copy, onClick: () => show(d.id, x.id), onCopy: () => duplicate(d, x), onStar: () => choose(d, x),
+      star: isChosen(d.id, x.id), copy: x.copy, onClick: () => show(d.id, x.id), onCopy: () => duplicate(d, x), onStar: () => choose(d, x), onDiscard: () => discard(d, x),
       ghostAt: () => [...kids.querySelectorAll('.item[data-v]')].filter(r => before(r.dataset.v, x.copy)).pop(),
       ghostText: 'copy of ' + upper(x.id), id: x.id}), x.label, label => label && act('/api/rename', {ds: d.id, variant: x.id, label}))));   // empty: keep the name
     kids.append(h('button', {class: 'newv', title: 'Ask Claude for a new layout in ' + upper(d.id) + ' ' + d.label + ', on your page',
@@ -1951,7 +1965,8 @@
       at.after(at.classList.contains('group') ? h('div', {class: 'group'}, ghost) : ghost);
     };
     split.onmouseleave = () => $('nav').querySelectorAll('.ghost').forEach(g => (g.parentElement.children.length === 1 ? g.parentElement : g).remove());
-    const acts = h('span', {class: 'acts'}, split);
+    const acts = h('span', {class: 'acts'}, split, h('button', {class: 'act del', 'data-focus': 'del ' + full, title: 'Discard ' + id,
+      'aria-label': 'Discard ' + full + ' ' + label, onclick: e => { e.stopPropagation(); o.onDiscard(); }}, ic('trash')));
     if (o.onStar || o.star) acts.append(h('button', {class: 'act star' + (o.star ? ' star-on' : ''), 'data-focus': 'star ' + full, title: o.star ? 'Chosen for the website' : 'Choose ' + id + ' for the website',
       'aria-label': o.star ? full + ' is chosen for the website' : 'Choose ' + full + ' for the website', onclick: e => { e.stopPropagation(); if (o.onStar && !o.star) o.onStar(); }}, ic('star')));
     row.append(acts);
@@ -2018,7 +2033,7 @@
     $('editBtn').title = orig ? 'Ask Claude for small changes to this page; point at what to change'
       : 'Ask Claude to change this version, in place; point at what to change';
     $('discardBtn').classList.toggle('hidden', orig);
-    $('discardBtn').textContent = orig ? '' : 'Discard ' + upper(v ? v.id : ds.id);
+    $('discardBtn').lastChild.textContent = orig ? '' : 'Discard ' + upper(v ? v.id : ds.id);
     $('discardBtn').title = v ? 'Delete this variant and its pages' : 'Delete this design system and all its variants';
     const chosen = orig ? isChosen(ORIGINAL) : v && isChosen(ds.id, v.id), cb = $('chooseBtn');
     cb.disabled = !!chosen || (!orig && !v);
@@ -2408,6 +2423,7 @@
     if (e.key !== 'Escape') return;
     const box = document.querySelector('.lightbox');
     if (box) return box.click();       // closes it, focus back where it was
+    if (previewing) return setPreview(false);
     if (!$('linkCard').classList.contains('hidden')) {   // the card closes; the keyboard goes to the badge only from the card
       const inCard = $('linkCard').contains(document.activeElement) || document.activeElement === $('link');
       hideCard();
@@ -2415,6 +2431,25 @@
     }
     if (mode) closePanel();
   }
+
+  function setPreview(on, quiet) {     // the page alone in the window; quiet: ended by another view (the focus stays)
+    if (on === previewing) return;
+    previewing = on;
+    document.body.classList.toggle('preview', on);
+    if (on) {
+      pointingWas = annotating;
+      if (annotating) setPointing(false);
+      closePageMenu();
+      hideCard();
+      hook();
+      frame.focus();                   // the page scrolls with the keys, Esc comes back
+    } else {
+      if (pointingWas && mode && MODES[mode].pointing) setPointing(true);
+      if (!quiet) $('previewBtn').focus();
+    }
+  }
+  $('previewBtn').onclick = () => setPreview(true);
+  $('exitPreview').onclick = () => setPreview(false);
 
   const selectorOf = __SELECTOR_OF__;   // measure.SELECTOR_OF: the reports' selectors
   function snippet(el) {
@@ -2727,8 +2762,8 @@
     }
   }
   $('chooseBtn').onclick = () => { const {ds, v} = current(); choose(dsId === ORIGINAL ? null : ds, v); };
-  $('discardBtn').onclick = async () => {
-    const {ds, v} = current();
+  $('discardBtn').onclick = () => { const {ds, v} = current(); discard(ds, v); };
+  async function discard(ds, v) {      // v null: the design system with all its versions
     const starred = v ? isChosen(ds.id, v.id) : !!S.chosen && S.chosen.ds === ds.id;
     const body = (v ? 'This deletes the variant and all its pages.'
       : 'This deletes the design system with its style guide' + (ds.variants.length === 0 ? '.' : ds.variants.length === 1 ? ' and its variant.' : ' and all ' + plural(ds.variants.length, 'variant') + '.'))
@@ -2737,8 +2772,9 @@
     if (await act('/api/discard', {ds: ds.id, variant: v && v.id}, 'Discarded ' + upper(v ? v.id : ds.id) + '.') === undefined) return;   // not discarded: its notes stay
     const gone = (v ? v.dir : ds.dir) + '/';   // its notes go with it (a new copy may get its id again)
     if (notes.some(n => n.file.startsWith(gone))) { notes = notes.filter(n => !n.file.startsWith(gone)); saveNotes(); renderPanel(); }
-    check();
-  };
+    await check();
+    if (document.activeElement === document.body) { const row = navRow(); if (row) row.focus(); }   // its row is gone
+  }
 
   // --- Sessions: which agent session gets the requests ------------------------
   // on: the chosen session runs; rejoin: it runs but must join again (the app restarted); ended: it closed;
