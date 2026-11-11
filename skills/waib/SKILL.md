@@ -54,7 +54,7 @@ A message whose first line is `[waib app] <project dir>` was sent by the user fr
 | `Analyse these pages:` | Analyse them. With `Then write the overall report.`, write it after. |
 | `Write the overall report` | Write it from all page reports. |
 | `Start designing: refresh …` / `… redesign …` | Build the first design on the user's page (below). |
-| `Build <design> on:` + URLs | Build those pages in that design. Analyse pages that aren't copied yet first. |
+| `Build <design> on:` + URLs | Build those pages in that design. Analyse pages that aren't copied yet first. A page the `Context` block calls new was added in the app ("Add a page"): the website doesn't have it, so don't copy or analyse it; build it from the request and the design's other pages. |
 | `Edit <design> [on <page>]` | Change that version in place (below). An edit of a style guide usually has no page. |
 | `New variant in <ds> …` / `New design system …` | Build it on the user's page. |
 | `Edit the original [on <page>]` | `"$PY" "$S/manage_variants.py" --project-dir "$OUT" original --page <slug>`, then make exactly the requested changes in `original/<slug>.html`, nothing else (without a page, the notes' files name it). |
@@ -135,6 +135,8 @@ A design system (DS) is a look: `variants/<ds>/tokens.css` + `styleguide.html`. 
 - Copy the logo and images you use from `scraped/assets/` to `$OUT/assets/`. Tell the user when an image is too small or poor for where it's used.
 
 **The reports are the requirements** of all design work, not only of the first design. The page's report (`design_input`, `inventory`, `keep`, `fix`, `add`) says what a page must do and contain; the overall report's `brief` and `brand` hold for every design; other pages' reports matter when a part the pages share (header, footer, a component) changes. Read what the request needs (a small edit may need none of it); the user's request wins over a report. A page without a report: copy and analyse it first (Analyse pages), then build from its report. No overall report: not required, but recommended, because it shows patterns and structural problems across pages; write it once two or more pages have reports, or suggest it to the user.
+
+**A page the website doesn't have yet** (the user asks for one in chat, or a design needs one, e.g. a contact form): `"$PY" "$S/manage_variants.py" --project-dir "$OUT" add-page --title "<page name>" [--slug <file name>] [--notes "<what it is for>"]` puts it on the Redesign list with a placeholder copy and an empty report (the user does the same with "Add a page" in the app). Build it as `<slug>.html` in the design; never copy or analyse it. Without this the app can't show the page and the export leaves it out.
 
 **More pages of a design** (`Build … on`): each page from its report; same header, footer and components as the variant's existing pages; reuse `styles.css`.
 

@@ -94,6 +94,8 @@ The example is a finished Waib project for Millbrook Home & Garden, a made-up sh
 
 ## Good to know
 
+**A page your site doesn't have yet.** Press **Add a page** in Pages, or at the end of the page list in Designs, and give it a name. It goes on your Redesign list marked *New*; Claude builds it in the design you are looking at, and the export includes it.
+
 **Where your work goes.** Each project is a folder in the folder you started Claude Code in, named after the site (`waib-<domain>`), its code folder or repository, or `waib-scratch`. It holds the copied pages, the reports, the designs and the export. To come back to a project later, start Waib again with the same address, or ask Claude to open the project's folder.
 
 ![A copied page with a video and an image left out, and a message to Claude](docs/screenshots/media.png)

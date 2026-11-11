@@ -189,7 +189,7 @@
   .search:focus-within, .field:focus-within, #pageBtn.open { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
   #canvas { flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative; overflow: hidden; }   /* never paints over the panel */
-  body.offline :is(#actions, .newv, #newDsBtn, .item .acts, #allBtn, #listBtn, #doc input, #doc button, .renamable) { opacity: .5; pointer-events: none; }   /* the app is stopped */
+  body.offline :is(#actions, .newv, #newDsBtn, .item .acts, #allBtn, #addPageBtn, #listBtn, #doc input, #doc button, .renamable) { opacity: .5; pointer-events: none; }   /* the app is stopped */
   .toolbar { min-height: 48px; flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 12px 6px 16px;   /* narrow: the buttons go below the name */
              background: var(--sheet); border-bottom: 1px solid var(--rule); }
   .crumb { flex: 1 1 240px; min-width: 0; display: flex; align-items: center; gap: 8px; font-weight: 600; white-space: nowrap; overflow: hidden; }
@@ -433,6 +433,7 @@
   #pageMenu button .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #pageMenu button small { color: var(--ink-3); }
   #pageMenu .blank { width: 15px; }
+  #pageMenu button.addp { margin-top: 4px; color: var(--accent-strong); }
   #pageMenu p { margin-top: 4px; padding: 8px 10px 6px; border-top: 1px solid var(--rule-soft); font-size: 12px; color: var(--ink-2); }
 
   /* Request panel */
@@ -471,6 +472,8 @@
   dialog::backdrop { background: rgba(23, 28, 38, .32); }
   dialog h3 { font-size: 15px; font-weight: 650; margin-bottom: 6px; }
   dialog p { color: var(--ink-2); margin-bottom: 20px; white-space: pre-line; }
+  dialog input { display: block; width: 100%; height: 36px; margin: -8px 0 20px; padding: 0 10px; border: 1px solid var(--field-line); border-radius: var(--r-control); background: var(--sheet); }
+  dialog input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
   #toast { position: fixed; left: 50%; bottom: 20px; z-index: 30; transform: translateX(-50%); display: flex; align-items: center; gap: 12px;
@@ -603,6 +606,7 @@
           <button data-tab="report">Report</button><button data-tab="original">Page</button>
         </div>
         <button class="btn" id="listBtn" data-for="report"></button>
+        <button class="btn" id="addPageBtn" data-for="pages" title="A page the website doesn't have yet: Claude builds it in Designs"><svg aria-hidden="true" class="i"><use href="#i-plus"/></svg>Add a page</button>
         <button class="btn claude" id="allBtn" data-for="pages overall"></button>
         <button class="btn" id="previewBtn" data-for="designs site" title="See this page alone, in the whole window (Esc comes back)"><svg aria-hidden="true" class="i"><use href="#i-eye"/></svg>Preview</button>
         <div class="tools" id="actions">
@@ -664,6 +668,7 @@
   <form method="dialog">
     <h3 id="dialogTitle"></h3>
     <p id="dialogBody"></p>
+    <input id="dialogInput" class="hidden" type="text" maxlength="80" autocomplete="off" aria-labelledby="dialogTitle">
     <div class="dialog-actions">
       <button class="btn" value="cancel">Cancel</button>
       <button class="btn ink" id="dialogOk" value="ok"></button>
@@ -944,15 +949,23 @@
   }
 
   // In-app confirmation; resolves true when the user confirms.
-  function ask(title, body, ok) {
-    const d = $('dialog');
+  function ask(title, body, ok, field) {   // field: a placeholder; then it asks for a line of text and resolves to it ('' when cancelled)
+    const d = $('dialog'), input = $('dialogInput');
     $('dialogTitle').textContent = title;
     $('dialogBody').textContent = body;
     $('dialogOk').textContent = ok;
+    input.classList.toggle('hidden', field == null);
+    input.value = '';
+    input.placeholder = field || '';
     d.returnValue = '';
     d.showModal();
-    return new Promise(resolve => d.addEventListener('close', () => resolve(d.returnValue === 'ok'), {once: true}));
+    if (field != null) input.focus();
+    return new Promise(resolve => d.addEventListener('close', () =>
+      resolve(field == null ? d.returnValue === 'ok' : d.returnValue === 'ok' ? input.value.trim() : ''), {once: true}));
   }
+  $('dialogInput').addEventListener('keydown', e => {   // Enter confirms (the form's first button is Cancel)
+    if (e.key === 'Enter') { e.preventDefault(); $('dialogOk').click(); }
+  });
 
   // --- Routing: #pages, #folder:<path>, #overall, #report:<url>, #designs, #site, #site:<slug> (Start until the project starts)
   function route() {
@@ -977,6 +990,9 @@
   const onTheList = url => (settings().redesign || []).includes(url);   // (also an address that shares its copy with another)
   const yourUrl = () => settings().url || '';
   const slugOf = url => S.copied[url];
+  const isNew = url => (S.new || []).includes(url);          // added here: the website doesn't have this page
+  const bare = url => !!settings().scratch || isNew(url);    // no copy to report on: a placeholder and a description
+  const hasReport = url => status(url).report && !isNew(url);   // (a new page's report is empty)
   const slugOfFile = path => (path.match(/([^/]+)\.html$/) || [])[1] || '';   // 'variants/ds1/v1/about.html' -> 'about'
   const isCopy = path => /^(scraped|original)\//.test(path);   // a copied page (edited or not), not a design
   function labelOf(url) {
@@ -1505,7 +1521,7 @@
   function renderPages(v) {
     const {arg} = route(), list = redesignList();
     // Navigator: the list, the overall report, the site tree
-    const reports = list.filter(u => status(u).report).length;
+    const reports = list.filter(hasReport).length;
     put($('navTop'), h('p', {}, settings().scratch ? [h('b', {}, 'From scratch: '), 'there was no website, so there is nothing to report on here. Your pages are built in Designs.'] : S.discovery.source === 'sitemap'
       ? [h('b', {}, plural(S.discovery.count, 'page')), ' from the site\'s sitemap']
       : S.discovery.source === 'links' ? [h('b', {}, 'No sitemap. '), plural(S.discovery.count, 'page') + ' found so far; opening a folder finds more.']
@@ -1529,14 +1545,15 @@
       'aria-label': (settings().scratch ? 'On the website: ' : 'Redesign ') + labelOf(url), onchange: e => setRedesign(url, e.target.checked)});
     cb.checked = onTheList(url);
     const key = {'data-focus': 'act ' + url};   // Analyse -> Analysing… -> Open report: focus stays on this row
-    const action = st.report ? h('button', {...key, class: 'btn' + (url === yourUrl() ? ' ink' : ''), onclick: () => go('report', url)}, settings().scratch ? 'Open' : 'Open report')
+    const action = st.report ? h('button', {...key, class: 'btn' + (url === yourUrl() ? ' ink' : ''), onclick: () => go('report', url)}, bare(url) ? 'Open' : 'Open report')
       : st.busy ? h('button', {...key, class: 'linkish busy', title: 'Claude is on it. Click to ask again.', onclick: () => analyse([url])}, h('span', {class: 'spin'}), 'Analysing…')
       : st.failed ? h('button', {...key, class: 'btn', title: 'It couldn\'t be copied: ' + st.failed + '. Click to try again.', onclick: () => analyse([url])}, 'Couldn\'t be copied, try again')
       : h('button', {...key, class: 'btn', title: 'Copy the page and have Claude write its report', onclick: () => analyse([url])}, 'Analyse');
     return h('tr', {class: url === yourUrl() ? 'you' : ''},
       h('td', {class: 'narrow'}, cb),
       h('td', {class: 'page'}, h('button', {class: 'linkish', onclick: () => go('report', url)}, labelOf(url)),
-        url === yourUrl() ? [' ', h('span', {class: 'tag blue'}, 'Your page')] : null, extra || null, h('small', {}, shortPath(url))),
+        url === yourUrl() ? [' ', h('span', {class: 'tag blue'}, 'Your page')] : null,
+        isNew(url) ? [' ', h('span', {class: 'tag', title: 'Added here: the website doesn\'t have this page yet'}, 'New')] : null, extra || null, h('small', {}, shortPath(url))),
       settings().scratch ? null : h('td', {class: 'narrow'}, scoreTag(st.score, st.partial)), h('td', {class: 'todo'}, action));
   }
   const table = (rows, all) => h('table', {class: 'tbl'}, settings().scratch   // from scratch: no scores, no reports
@@ -1563,7 +1580,7 @@
 
   function pagesList(list) {
     setCrumb(h('span', {class: 'seg'}, settings().scratch ? 'Your pages' : 'Redesign'), h('span', {class: 'count'}, plural(list.length, 'page')
-      + (settings().scratch ? '' : ', ' + list.filter(u => status(u).report).length + ' with a report')));
+      + (settings().scratch ? '' : ', ' + list.filter(hasReport).length + ' with a report')));
     crumbIsHeading();
     allButton(list);
     showArea('doc');
@@ -1578,7 +1595,7 @@
   const removed = new Set();             // unticked in the Redesign list, shown until you leave it
   function allButton(list) {
     const b = $('allBtn'), missing = list.filter(u => !status(u).report && !status(u).busy);
-    const reports = list.filter(u => status(u).report).length, busy = list.filter(u => status(u).busy).length;
+    const reports = list.filter(hasReport).length, busy = list.filter(u => status(u).busy).length;
     b.classList.toggle('hidden', !list.length || !!settings().scratch);   // from scratch: nothing to report on
     const writing = !missing.length && !busy && overallAsked();
     put(b, missing.length ? 'Report on all ' + list.length : busy ? 'Analysing ' + plural(busy, 'page') + '…'
@@ -1775,7 +1792,7 @@
     $('listBtn').classList.remove('hidden');
     const known = [...Object.keys(S.copied), ...(settings().redesign || [])].find(u => loose(u) === loose(url));   // LOCALHOST, www.: the address as the app knows it
     if (known && known !== url) { history.replaceState(null, '', '#report:' + enc(known)); lastHash = location.hash; url = known; }   // (the tree, the arrows and this view use it)
-    const st = status(url), slug = st.slug;
+    const st = status(url), slug = st.slug, plain = bare(url), added = isNew(url);
     setCrumb(crumb([{label: settings().scratch ? 'Your pages' : 'Redesign', go: '#pages', dim: true}, {label: labelOf(url)}]));
     const onList = onTheList(url), lb = $('listBtn');
     put(lb, ic(onList ? 'check' : 'plus'), settings().scratch ? (onList ? 'On the website' : 'Add to the website') : onList ? 'On your Redesign list' : 'Add to your Redesign list');
@@ -1784,13 +1801,13 @@
     lb.title = settings().scratch ? (onList ? 'Click to leave it off the website' : 'Put this page on the website')
       : onList ? 'Click to take it off the list' : 'Redesign this page too';
     lb.onclick = () => setRedesign(url, !onList);
-    if (reportTab === 'original' && !slug || reportTab === 'live' && settings().scratch) reportTab = 'report';   // from scratch: nothing live
+    if (reportTab === 'original' && !slug || reportTab === 'live' && plain) reportTab = 'report';   // from scratch: nothing live
     document.querySelectorAll('#reportTabs button').forEach(b => {
       press(b, b.dataset.tab === reportTab || (b.dataset.tab === 'original' && reportTab === 'live'));
       b.disabled = b.dataset.tab === 'original' && !slug;
-      b.title = b.dataset.tab === 'original' ? (settings().scratch ? 'The placeholder page' : slug ? 'The page itself, with the findings marked' : 'Not copied yet')
-        : settings().scratch ? 'Your description' : 'Claude\'s report on this page';
-      if (b.dataset.tab === 'report') b.textContent = settings().scratch ? 'Description' : 'Report';
+      b.title = b.dataset.tab === 'original' ? (plain ? 'The placeholder page' : slug ? 'The page itself, with the findings marked' : 'Not copied yet')
+        : plain ? 'Your description' : 'Claude\'s report on this page';
+      if (b.dataset.tab === 'report') b.textContent = plain ? 'Description' : 'Report';
     });
     const [report, facts, cl] = slug ? await Promise.all([file('reports/' + slug + '.json'), file('content/' + slug + '.json'), checklist()]) : [null, null, await checklist()];
     if (route().view !== 'report' || route().arg !== url) return;
@@ -1809,9 +1826,10 @@
       $('cover').classList.remove('hidden');
       put($('cover'), h('span', {class: 'muted'}, live
           ? 'The live page as it is now (no markings). If it stays blank, the site doesn\'t allow being shown inside another page.'
-          : settings().scratch ? 'A placeholder: there was no website to copy. Your pages are built in Designs.'
+          : added ? 'A placeholder: the website doesn\'t have this page yet. It is built in Designs.'
+          : plain ? 'A placeholder: there was no website to copy. Your pages are built in Designs.'
           : 'The copy' + (when ? ' from ' + when : '') + ' that the report is based on' + (problems.length ? ', with ' + plural(problems.length, 'finding') + ' marked.' : '.')),
-        settings().scratch ? null : h('button', {class: 'btn', 'data-focus': 'live toggle', onclick: () => { reportTab = live ? 'original' : 'live'; render(); }}, live ? 'Back to the copy' : 'Compare with the live page'),
+        plain ? null : h('button', {class: 'btn', 'data-focus': 'live toggle', onclick: () => { reportTab = live ? 'original' : 'live'; render(); }}, live ? 'Back to the copy' : 'Compare with the live page'),
         live ? null : mediaBar(url, slug));
       if (typing) { chatTa.focus(); chatTa.setSelectionRange(typing[0], typing[1]); }   // a redraw while typing: the cursor stays
       paintMedia();
@@ -1827,10 +1845,11 @@
     const head = h('div', {class: 'card'},
       h('div', {class: 'rhead'}, st.score != null ? ring(st.score, st.partial) : null, h('div', {}, h('h2', {}, labelOf(url)),
         url === yourUrl() ? [h('span', {class: 'tag blue'}, 'Your page'), ' '] : null,
-        h('span', {class: 'muted'}, (settings().scratch ? 'Started from scratch' : report ? 'Report by Claude' : st.busy ? 'Waiting for Claude\'s report…' : 'Measured only, no report yet')
-          + (settings().scratch ? '' : ' · ' + answered + ' of ' + cl.checks.length + ' checks answered')))),
-      settings().scratch ? null : h('p', {class: 'question'}, cl.question || ''),
-      settings().scratch ? h('p', {class: 'summary'}, 'There was no website, so there is no report: nothing to keep or fix. Claude builds your pages from your description, in Designs.')
+        h('span', {class: 'muted'}, (added ? 'New page, not on the website yet' : plain ? 'Started from scratch' : report ? 'Report by Claude' : st.busy ? 'Waiting for Claude\'s report…' : 'Measured only, no report yet')
+          + (plain ? '' : ' · ' + answered + ' of ' + cl.checks.length + ' checks answered')))),
+      plain ? null : h('p', {class: 'question'}, cl.question || ''),
+      added ? h('p', {class: 'summary'}, r.summary || 'This page is new: the website doesn\'t have it yet. Claude builds it in Designs.')
+      : plain ? h('p', {class: 'summary'}, 'There was no website, so there is no report: nothing to keep or fix. Claude builds your pages from your description, in Designs.')
       : r.summary ? h('p', {class: 'summary'}, r.summary) : !st.busy && !report ? h('p', {}, h('button', {class: 'btn claude', onclick: () => analyse([url])}, 'Write the report')) : null,
       r.audience ? [h('h3', {class: 'sub'}, 'Audience'), h('p', {}, r.audience)] : null,   // (under the page's h2)
       (r.tasks || []).length ? [h('h3', {class: 'sub'}, 'What visitors want to do here'), h('ol', {class: 'tasks'}, r.tasks.map(t => h('li', {}, t)))] : null);
@@ -1854,13 +1873,13 @@
       h('table', {class: 'mini'}, r.inventory.map(b => h('tr', {class: b.selector ? 'linked' : '', onclick: b.selector ? () => showOnPage(b.selector) : null, ...(b.selector ? clickable : {})},
         h('td', {}, b.block), h('td', {}, h('span', {class: 'tag ' + ({drop: 'high', rewrite: 'medium', merge: 'medium'}[b.action] || 'blue')}, b.action || '')),
         h('td', {class: 'muted'}, b.why || ''))))) : null;
-    const outcome = report ? h('div', {class: 'card'},
+    const outcome = report && ['keep', 'fix', 'add', 'design_input'].some(k => (r[k] || []).length) ? h('div', {class: 'card'},   // (a new page's report is empty)
       (r.keep || []).length ? [h('h4', {}, 'Keep'), list(r.keep)] : null,
       (r.fix || []).length ? [h('h4', {}, 'Fix'), h('ol', {class: 'problems'}, r.fix.map((x, i) =>
         h('li', {class: x.selector ? 'linked' : '', onclick: x.selector ? () => showOnPage(x.selector) : null},   // a list item stays one (the text is the control)
           h('span', {class: 'num'}, String(i + 1)), h('span', x.selector ? clickable : {}, x.text, ' ', x.severity ? h('span', {class: 'tag ' + x.severity}, x.severity) : null))))] : null,
       (r.add || []).length ? [h('h4', {}, 'Add'), list(r.add)] : null,
-      (r.design_input || []).length ? [h('h4', {}, settings().scratch ? 'Your description' : 'For the new design'), list(r.design_input)] : null) : null;
+      (r.design_input || []).length ? [h('h4', {}, plain ? 'Your description' : 'For the new design'), list(r.design_input)] : null) : null;
 
     const net = f.network || {};
     const colors = [...(f.colors || []).slice(0, 2), ...(f.neutrals || [])].slice(0, 4);
@@ -1878,8 +1897,8 @@
         ['Load time', net.load_ms ? (net.load_ms < 100 ? net.load_ms + ' ms' : (net.load_ms / 1000).toFixed(1) + ' s') : null], ['Weight', net.bytes ? mb(net.bytes) : null],
         ['Requests', net.requests], ['Last changed', net.last_modified ? (isNaN(new Date(net.last_modified)) ? net.last_modified : new Date(net.last_modified).toLocaleDateString()) : null]]
         .filter(([, v]) => v != null && v !== '').map(([k, v]) => [h('dt', {}, k), h('dd', {}, String(v))]))));
-    const bare = !!settings().scratch;   // from scratch: the summary and the notes, no checks to show
-    put($('doc'), h('div', {class: 'report'}, h('div', {}, head, report && !bare ? areas : null, bare ? null : checks, inv, outcome), bare ? null : side));
+    // from scratch, or a page added here: the summary and the notes, no checks to show
+    put($('doc'), h('div', {class: 'report'}, h('div', {}, head, report && !plain ? areas : null, plain ? null : checks, inv, outcome), plain ? null : side));
   }
   document.querySelectorAll('#reportTabs button').forEach(b => { b.onclick = () => { reportTab = b.dataset.tab; render(); }; });
 
@@ -2067,11 +2086,14 @@
     const pages = [...new Set(urls.filter(Boolean))], lines = ['Context (the reports are the requirements: read what this request needs; the request itself wins):'];
     for (const u of pages) {
       const st = status(u);
-      lines.push('- ' + labelOf(u) + ': ' + (st.report ? 'reports/' + st.slug + '.json (what the page must do, its design input, what to keep, fix and add)'
+      lines.push('- ' + labelOf(u) + ': ' + (isNew(u) ? 'a new page, added in the app: the website doesn\'t have it, so there is nothing to copy or analyse. Build it from the request'
+        + ' and the design\'s other pages (same header, footer and components); reports/' + st.slug + '.json holds the user\'s description, if they gave one.'
+        : st.report ? 'reports/' + st.slug + '.json (what the page must do, its design input, what to keep, fix and add)'
         : st.slug ? 'no report yet. Write it first (analyse the page), then build from it.'
         : 'not copied yet (' + u + '). Copy and analyse it first, then build from its report.'));
     }
-    const others = Object.keys(S.pages).filter(s => S.pages[s].report && !pages.some(u => slugOf(u) === s)).length;
+    const fresh = new Set((S.new || []).map(slugOf));   // (their reports are empty)
+    const others = Object.keys(S.pages).filter(s => S.pages[s].report && !fresh.has(s) && !pages.some(u => slugOf(u) === s)).length;
     if (others) lines.push('- ' + plural(others, 'more page report') + ' in reports/: for parts the pages share (header, footer, components).');
     lines.push(S.overall ? '- reports/_overall.json: the brief and the brand, the requirements of every design.'
       : '- No overall report yet. Not required, but recommended: it shows patterns and structural problems across pages. Write it once two or more pages have reports, or suggest it.');
@@ -2092,6 +2114,8 @@
     });
     const builtCount = redesignList().filter(u => slugOf(u) && builtIn(d, slugOf(u))).length;
     put(menu, h('div', {class: 'mh'}, 'Your Redesign list'), items,
+      h('button', {class: 'addp', title: 'A page the website doesn\'t have yet: Claude builds it in this design', onclick: () => { closePageMenu(); addPage(); }},
+        ic('plus'), h('span', {class: 'label'}, 'Add a page')),
       h('p', {}, (orig ? 'The original' : designName(d.ds, d.v)) + ' is on ' + builtCount + ' of your ' + plural(redesignList().length, 'page') + '.'
         + (orig || builtCount === redesignList().length ? '' : ' Pick a page it isn\'t on yet to have Claude build it there.')));
     const r = $('pageBtn').getBoundingClientRect();
@@ -2108,6 +2132,18 @@
   $('pageMenu').addEventListener('focusout', e => {   // Tab away (a mouse press in Safari moves focus nowhere: the click closes it then)
     if (e.relatedTarget && !$('pageMenu').contains(e.relatedTarget) && e.relatedTarget !== $('pageBtn')) closePageMenu();
   });
+  // A page the website doesn't have yet (from scratch: a further page): a placeholder on the list, built in Designs.
+  async function addPage() {
+    const title = await ask('Add a page', settings().scratch ? 'A further page of your website. Claude builds it in Designs when you ask for it.'
+      : 'A page your website doesn\'t have yet. It goes on your Redesign list, and Claude builds it in Designs when you ask for it.', 'Add the page', 'Its name, e.g. Contact');
+    if (!title) return;
+    const page = await act('/api/add-page', {title});
+    if (!page) return;
+    await check();
+    toast(page.added ? page.title + ' is on your ' + (settings().scratch ? 'website' : 'Redesign list') + '.' : page.title + ' is there already.');
+    if (route().view === 'designs') { designPage = page.slug; render(); }   // on screen at once: "Build it on this page"
+  }
+  $('addPageBtn').onclick = addPage;
   function closePageMenu() {
     $('pageMenu').classList.add('hidden');
     if ($('pageBtn')) { $('pageBtn').classList.remove('open'); $('pageBtn').setAttribute('aria-expanded', 'false'); }

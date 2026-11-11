@@ -143,7 +143,7 @@ def state(project):
     failed = sitemap.get("failed")
     failed = {canonical(u): str(why) for u, why in failed.items() if canonical(u) not in by_url} if isinstance(failed, dict) else {}
     titles = {canonical(p["url"]): str(p.get("title") or "") for p in sitemap_pages(sitemap)}
-    return {**data, "hosts": hosts(project, sitemap), "original": html_pages(project / ORIGINAL), "copied": by_url, "failed": failed, "titles": titles,
+    return {**data, "hosts": hosts(project, sitemap), "original": html_pages(project / ORIGINAL), "copied": by_url, "failed": failed, "titles": titles, "new": new_pages(project, sitemap),
             "pages": pages, "overall": overall if isinstance(overall, dict) else None,
             "ideas": read_dict(project / "ideas.json"), "settings": settings(project)}
 
@@ -205,20 +205,29 @@ PLACEHOLDER_PAGE = ('<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8
                     '<body><main><h1>{head}</h1><p>{text}</p></main></body></html>\n')
 
 
-def scratch_page(project, slug, url, title, text, notes):
-    """A page of a project started from scratch: a placeholder copy, listed, with an empty report
-    whose only design input is the user's description."""
+def scratch_page(project, slug, url, title, text, notes, new=False):
+    """A page without a copy: a placeholder, listed, with an empty report whose only design input is the
+    user's description. Every page of a project started from scratch is one; in a project of a website,
+    a page the site doesn't have yet (new: marked so in the sitemap)."""
     project = Path(project)
     sitemap = sitemap_of(project) or {"home": SCRATCH, "origins": [], "pages": []}
-    sitemap["pages"] = [p for p in sitemap.get("pages", []) if p.get("url") != url] + [{"url": url, "filename": f"{slug}.html", "title": title}]
+    sitemap["pages"] = [p for p in sitemap.get("pages", []) if p.get("url") != url] + [{"url": url, "filename": f"{slug}.html", "title": title, **({"new": True} if new else {})}]
     write_json(project / "scraped" / "sitemap.json", sitemap)
     write_text(project / "scraped" / f"{slug}.html", PLACEHOLDER_PAGE.format(title=escape(title), head=escape(title), text=text))
     write_json(project / "content" / f"{slug}.json", {"checks": {}})
     write_text(project / "content" / f"{slug}.md", "")
     write_json(project / "reports" / f"{slug}.json", {
-        "summary": "There was no website, so there is no report: nothing to keep or fix. Claude builds your pages from your description, in Designs.",
+        "summary": NEW_SUMMARY if new else "There was no website, so there is no report: nothing to keep or fix. Claude builds your pages from your description, in Designs.",
         "audience": "", "tasks": [], "checks": {}, "inventory": [], "keep": [], "fix": [], "add": [],
         "design_input": [notes] if notes else []})
+
+
+NEW_SUMMARY = "This page is new: the website doesn't have it yet, so there is no report. Claude builds it in Designs, in the look of your other pages."
+
+
+def new_pages(project, sitemap=None):
+    """The addresses of the pages added to a website's project (the site doesn't have them)."""
+    return [canonical(p["url"]) for p in sitemap_pages(sitemap_of(project, sitemap)) if p.get("new")]
 
 
 @locked
@@ -239,24 +248,47 @@ def from_scratch(project, notes, renamed_from=None):
 
 
 @locked
-def add_page(project, title):
-    """Another page of a project started from scratch (as its description names them): listed for the redesign."""
+def new_page(project, title, slug=None, notes=""):
+    """A page the project has no copy of, listed for the redesign: every further page of a project started
+    from scratch, and in a project of a website a page the site doesn't have yet. slug: the file name to use
+    (default: from the title). Returns {url, slug, title, added}; added is False when the page was there already."""
     opts = settings(project)
-    if not opts.get("scratch"):
-        fail("add-page is only for projects started from scratch.")
+    if not opts.get("started"):
+        fail("the project hasn't started yet.")
     title = clean_label(title) or fail("a page needs a title.")
-    pages = {p["url"]: p for p in sitemap_pages(sitemap_of(project))}
-    base = re.sub(r"[^a-z0-9]+", "-", ascii_fold(title.lower())).strip("-")[:50].strip("-") or "page"
+    scratch = bool(opts.get("scratch"))
+    sitemap = sitemap_of(project)
+    pages = {canonical(p["url"]): p for p in sitemap_pages(sitemap)}
+    slugs = {Path(p["filename"]).stem.lower(): u for u, p in pages.items()}
+    home = urlparse(str(sitemap.get("home") or opts.get("url") or ""))
+    if not scratch and not home.netloc:
+        fail("the project has no website address to put the page under.")
+    address = (lambda s: f"{SCRATCH}{s}/") if scratch else (lambda s: canonical(f"{home.scheme}://{home.netloc}/{s}"))
+    if slug is not None and not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug):
+        fail("a slug is lower-case letters, digits and hyphens, e.g. about-us.")
+    given = slug
+    base = slug or re.sub(r"[^a-z0-9]+", "-", ascii_fold(title.lower())).strip("-")[:50].strip("-") or "page"
     slug, n = base, 1
-    while slug in ("index", "styleguide") or f"{SCRATCH}{slug}/" in pages:   # Café and Cafe: two pages; "styleguide" is the style guide's
-        if str(pages.get(f"{SCRATCH}{slug}/", {}).get("title", "")).lower() == title.lower():
-            return f"{title} is there already: {SCRATCH}{slug}/ (slug {slug})"
+    while slug in ("index", "styleguide") or slug in slugs or address(slug) in pages:   # Café and Cafe: two pages; "styleguide" is the style guide's
+        there = pages.get(slugs.get(slug) or address(slug), {})
+        if (scratch or there.get("new")) and str(there.get("title", "")).lower() == title.lower():
+            return {"url": slugs.get(slug) or address(slug), "slug": slug, "title": title, "added": False}
+        if given:
+            fail(f"there is a page {given} already.")
         n += 1
         slug = f"{base}-{n}"
-    url = f"{SCRATCH}{slug}/"
-    scratch_page(project, slug, url, title, "There was no website to copy, so this placeholder stays as it is. This page is built in Designs when you ask for it.", opts.get("notes", ""))
+    url = address(slug)
+    scratch_page(project, slug, url, title, "There was no website to copy, so this placeholder stays as it is. This page is built in Designs when you ask for it." if scratch
+                 else "This page is new: the website doesn't have it yet, so there is nothing to copy. It is built in Designs when you ask for it.",
+                 notes or (opts.get("notes", "") if scratch else ""), new=not scratch)
     change_settings(project, lambda o: o.update(redesign=merge(o.get("redesign", []), [url])))
-    return f"Added {title}: {url} (slug {slug})"
+    return {"url": url, "slug": slug, "title": title, "added": True}
+
+
+def add_page(project, title, slug=None, notes=""):
+    """new_page for the command line: one line saying what happened."""
+    page = new_page(project, title, slug, notes)
+    return (f"Added {page['title']}" if page["added"] else f"{page['title']} is there already") + f": {page['url']} (slug {page['slug']})"
 
 
 def find(items, item_id):
@@ -532,6 +564,7 @@ def export(project):
     by_url = copied(project)
     wanted = list(dict.fromkeys(by_url[canonical(u)] for u in opts.get("redesign", []) if canonical(u) in by_url))   # two addresses, one copy: once
     url_of = {slug: url for url, slug in by_url.items()}
+    added = {by_url[u] for u in new_pages(project) if u in by_url}   # pages the site doesn't have: only a design has them
     here = str(sitemap_of(project).get("home") or "") if opts.get("code") else None   # a site started from its code runs at a local address
     out = project / "export"
     warnings = []
@@ -542,6 +575,7 @@ def export(project):
             return edited if edited.exists() else project / "scraped" / f"{slug}.html"
         assets, others = project / "scraped" / "assets", []
         name = "the original"
+        wanted = [slug for slug in wanted if slug not in added]   # (their copies are placeholders)
     else:
         ds = need_ds(data, chosen["ds"])
         v = need_variant(ds, chosen["variant"])
@@ -677,9 +711,11 @@ def main():
     p.add_argument("--label", required=True)
     p.set_defaults(run=lambda a: add_variant(a.project_dir, a.ds, a.label))
 
-    p = sub.add_parser("add-page", help="Add a page to a project started from scratch")
+    p = sub.add_parser("add-page", help="Add a page the website doesn't have yet (or a further page of a project started from scratch)")
     p.add_argument("--title", required=True)
-    p.set_defaults(run=lambda a: add_page(a.project_dir, a.title))
+    p.add_argument("--slug", help="the page's file name without .html (default: from the title)")
+    p.add_argument("--notes", default="", help="what the page is for: its design input")
+    p.set_defaults(run=lambda a: add_page(a.project_dir, a.title, a.slug, a.notes))
 
     p = sub.add_parser("list", help="Put pages the user asked for in the chat on their Redesign list")
     p.add_argument("--add", nargs="+", required=True, metavar="URL")

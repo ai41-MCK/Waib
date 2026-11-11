@@ -506,6 +506,8 @@ class Handler(SimpleHTTPRequestHandler):
                         opts["requested"] = mv.merge(opts.get("requested", []), asked)
                     result = len(mv.change_settings(project, change)["redesign"])
                     mv.retry(project, [canonical(str(u)) for u in asked])
+                elif self.path == "/api/add-page":   # a page the site doesn't have yet (from scratch: a further page)
+                    result = mv.new_page(project, str(body.get("title") or ""), notes=str(body.get("notes") or "").strip()[:2000])
                 elif self.path == "/api/asked":   # sent to Claude: shown as being worked on in every tab, {key: null} when done
                     def change(opts):
                         asked = opts.get("asked") if isinstance(opts.get("asked"), dict) else {}
